@@ -62,10 +62,10 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.28 }}
             >
               <Link
-                to="/events?tab=camps"
+                to="/events?type=tournament"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-neon px-7 py-3.5 font-body text-xs font-bold uppercase tracking-[0.24em] text-dark transition-all hover:shadow-neon-lg active:scale-[0.98]"
               >
-                Explore Camps
+                Explore Tournaments
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
 
