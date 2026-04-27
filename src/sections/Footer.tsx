@@ -41,6 +41,7 @@ export function Footer() {
                 { label: 'Home', href: '/' },
                 { label: 'Events', href: '/events' },
                 { label: 'Videos', href: '/videos' },
+                { label: 'Store', href: '/store' },
                 { label: 'Dashboard', href: '/dashboard' },
               ].map((link) => (
                 <li key={link.label}>
@@ -62,10 +63,10 @@ export function Footer() {
             </h4>
             <ul className="space-y-3">
               {[
+                { label: 'Summer Fiesta (Live)', href: '/summer-fiesta' },
+                { label: 'Upcoming Tournaments', href: '/events?tab=tournaments' },
                 { label: 'Summer Camps', href: '/events?tab=camps' },
-                { label: 'Tournaments', href: '/events?tab=tournaments' },
                 { label: 'Past Events', href: '/events?tab=past' },
-                { label: 'Register Now', href: '/events' },
               ].map((link) => (
                 <li key={link.label}>
                   <Link
