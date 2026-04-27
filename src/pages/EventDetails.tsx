@@ -142,7 +142,7 @@ export default function EventDetails() {
               <div className="text-right">
                 <p className="text-white/40 text-xs font-body uppercase tracking-wider">Entry Fee</p>
                 <p className="text-neon font-display text-3xl font-bold">
-                  Rs. {event.entryFee.toLocaleString()}
+                  Rs. 900 + Service Tax
                 </p>
               </div>
               <button

@@ -65,7 +65,16 @@ export const supabaseService = {
     userId: string | undefined, 
     eventId: string, 
     paymentId: string, 
-    guestData: { email: string; name: string; phone: string; age?: string | number }
+    guestData: { 
+      email: string; 
+      name: string; 
+      phone: string; 
+      dob?: string; 
+      gender?: string; 
+      state?: string; 
+      district?: string;
+      fide_id?: string;
+    }
   ) {
     const { error } = await supabase
       .from('registrations')
@@ -78,6 +87,11 @@ export const supabaseService = {
           guest_email: guestData.email,
           guest_name: guestData.name,
           guest_phone: guestData.phone,
+          guest_dob: guestData.dob,
+          guest_gender: guestData.gender,
+          guest_state: guestData.state,
+          guest_district: guestData.district,
+          guest_fide_id: guestData.fide_id,
         }
       ] as any)
     
