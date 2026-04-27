@@ -109,11 +109,11 @@ export default function About() {
                 viewport={{ once: true }}
               >
                 <h2 className="font-display text-4xl md:text-5xl font-black text-white uppercase mb-8 leading-tight">
-                  Empowering <span className="text-neon">Young Minds</span> Across Chhattisgarh
+                  Empowering <span className="text-neon">Young Minds</span> Across India
                 </h2>
                 <div className="space-y-6 text-white/60 font-body text-lg leading-relaxed">
                   <p>
-                    I'm Amogh Yadav – a youth leader, content creator, and founder of CCR Youth and Chess City Raipur. Over the past several years, I’ve dedicated myself to organizing impactful chess events, empowering young minds, and building platforms that spark real change across Chhattisgarh.
+                    I'm Amogh Yadav – a youth leader, content creator, and founder of CCR Youth and Indian Chess Community. Over the past several years, I’ve dedicated myself to organizing impactful chess events, empowering young minds, and building platforms that spark real change across India.
                   </p>
                   <p>
                     From growing an Instagram presence to over 12 million views per month to taking local talent to national platforms, I’ve always believed that age should never limit ambition.

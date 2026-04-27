@@ -8,7 +8,7 @@ export function Footer() {
         {/* Giant Logo Text */}
         <div className="mb-16">
           <h2 className="font-display text-[7vw] md:text-[6vw] font-bold text-white/[0.03] uppercase leading-tight text-center select-none">
-            CHESS COMMUNITY CHHATTISGARH
+            INDIAN CHESS COMMUNITY
           </h2>
         </div>
 
@@ -16,7 +16,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <h3 className="font-display text-2xl font-bold text-white uppercase mb-4">
-              Chess Community Chhattisgarh
+              Indian Chess Community
             </h3>
             <p className="text-white/40 font-body text-sm leading-relaxed mb-6">
               Elite chess training camps and tournaments. Forging the next generation of Grandmasters since 2015.
@@ -101,7 +101,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-xs font-body">
-            &copy; 2026 Chess Community Chhattisgarh. All rights reserved.
+            &copy; 2026 Indian Chess Community. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <span className="text-white/30 text-xs font-body hover:text-white/50 cursor-pointer transition-colors">
