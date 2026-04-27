@@ -66,10 +66,10 @@ export function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="font-display text-lg md:text-xl font-black text-white tracking-tighter leading-none">
-                CHESS COMMUNITY
+                INDIAN CHESS
               </span>
               <span className="font-display text-[10px] font-bold text-neon tracking-[0.3em] uppercase leading-none mt-1 opacity-80">
-                CHHATTISGARH
+                COMMUNITY
               </span>
             </div>
           </Link>
