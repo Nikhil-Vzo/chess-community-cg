@@ -28,13 +28,13 @@ interface Registration {
     date: string
     location: string
     entry_fee: number
-    image_url: string
-    category: string
+    thumbnail_url: string
+    status: string
   }
 }
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { user, isLoaded } = useAuth()
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'overview'
 
@@ -42,7 +42,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // If not logged in, stop loading immediately
+    // Wait for auth to fully resolve before deciding
+    if (!isLoaded) return
+
+    // If auth resolved and no user, stop loading
     if (!user) {
       setLoading(false)
       return
@@ -63,8 +66,8 @@ export default function Dashboard() {
             date,
             location,
             entry_fee,
-            image_url,
-            category
+            thumbnail_url,
+            status
           )
         `)
         .or(`user_id.eq.${user.id},guest_email.eq.${user.email}`)
@@ -79,15 +82,15 @@ export default function Dashboard() {
       setLoading(false)
     }
     fetch()
-  }, [user])
+  }, [user, isLoaded])
 
   const tabs = [
     { label: 'Overview', value: 'overview', icon: LayoutDashboard },
     { label: 'My Registrations', value: 'registrations', icon: ClipboardList },
   ]
 
-  const upcomingCount = registrations.filter(r => r.event?.category === 'upcoming').length
-  const pastCount = registrations.filter(r => r.event?.category === 'past').length
+  const upcomingCount = registrations.filter(r => r.event?.status === 'upcoming').length
+  const pastCount = registrations.filter(r => r.event?.status === 'past').length
 
   return (
     <div className="min-h-screen bg-dark">
@@ -130,7 +133,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {loading ? (
+          {(loading || !isLoaded) ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 className="w-8 h-8 text-neon animate-spin" />
             </div>
@@ -205,9 +208,9 @@ export default function Dashboard() {
                             className="flex items-center justify-between p-4 bg-white/5 rounded-lg"
                           >
                             <div className="flex items-center gap-4">
-                              {reg.event?.image_url && (
+                              {reg.event?.thumbnail_url && (
                                 <div className="w-12 h-12 rounded overflow-hidden shrink-0">
-                                  <img src={reg.event.image_url} alt={reg.event.title} className="w-full h-full object-cover" />
+                                  <img src={reg.event.thumbnail_url} alt={reg.event.title} className="w-full h-full object-cover" />
                                 </div>
                               )}
                               <div>
@@ -271,9 +274,9 @@ export default function Dashboard() {
                             className="flex flex-col md:flex-row md:items-center justify-between p-5 bg-white/5 rounded-lg gap-4"
                           >
                             <div className="flex items-center gap-4">
-                              {reg.event?.image_url && (
+                              {reg.event?.thumbnail_url && (
                                 <div className="w-16 h-16 rounded overflow-hidden shrink-0">
-                                  <img src={reg.event.image_url} alt={reg.event.title} className="w-full h-full object-cover" />
+                                  <img src={reg.event.thumbnail_url} alt={reg.event.title} className="w-full h-full object-cover" />
                                 </div>
                               )}
                               <div>
