@@ -158,9 +158,9 @@ export default function SummerFiesta() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden min-h-screen flex items-center">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(200,255,46,0.15),transparent_70%)]" />
-          <img 
-            src="/chess-fiesta.jpeg" 
-            alt="Summer Fiesta Brochure Background" 
+          <img
+            src="/chess-fiesta.jpeg"
+            alt="Summer Fiesta Brochure Background"
             className="w-full h-full object-cover opacity-10 blur-sm scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-transparent" />
@@ -178,10 +178,10 @@ export default function SummerFiesta() {
                 <span className="w-2 h-2 rounded-full bg-neon animate-pulse" />
                 <span className="text-neon text-[10px] font-bold uppercase tracking-widest">Featured Tournament</span>
               </div>
-              
+
               <h1 className="font-display text-5xl md:text-7xl font-black uppercase leading-[1.1] mb-6">
                 <span className="block text-white/50 text-2xl md:text-3xl mb-2">{FIESTA_DATA.event.presented_by}</span>
-                Summer Fiesta<br/>
+                Summer Fiesta<br />
                 <span className="text-neon">Grand Chess Open</span>
               </h1>
 
@@ -218,11 +218,10 @@ export default function SummerFiesta() {
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={() => navigate(`/register/${dbEvent ? dbEvent.id : 'summer-fiesta'}`)}
-                  className={`px-8 py-4 font-body font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center gap-3 group ${
-                    eventStatus === 'past' 
-                      ? 'bg-white/10 text-white/50 cursor-not-allowed' 
+                  className={`px-8 py-4 font-body font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center gap-3 group ${eventStatus === 'past'
+                      ? 'bg-white/10 text-white/50 cursor-not-allowed'
                       : 'bg-neon text-dark hover:bg-white'
-                  }`}
+                    }`}
                   disabled={eventStatus === 'past'}
                 >
                   {eventStatus === 'past' ? 'Registrations Closed' : 'Register Now'}
@@ -247,9 +246,9 @@ export default function SummerFiesta() {
               className="relative perspective-grid"
             >
               <div className="absolute inset-0 bg-neon/20 blur-3xl rounded-[40px] -z-10 animate-pulse-glow" />
-              <img 
-                src="/chess-fiesta.jpeg" 
-                alt="Brochure" 
+              <img
+                src="https://img.freepik.com/free-photo/digital-art-style-abstract-chess-pieces_23-2151476080.jpg?semt=ais_hybrid&w=740&q=80"
+                alt="Brochure"
                 className="w-full h-auto rounded-[32px] border-2 border-white/10 shadow-2xl shadow-neon/10 object-cover"
               />
             </motion.div>
@@ -280,9 +279,8 @@ export default function SummerFiesta() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 font-bold uppercase tracking-widest text-xs rounded-xl transition-all duration-300 ${
-                    activeTab === tab ? 'bg-neon text-dark' : 'bg-white/5 text-white/50 hover:bg-white/10'
-                  }`}
+                  className={`px-6 py-3 font-bold uppercase tracking-widest text-xs rounded-xl transition-all duration-300 ${activeTab === tab ? 'bg-neon text-dark' : 'bg-white/5 text-white/50 hover:bg-white/10'
+                    }`}
                 >
                   {tab.replace('_', ' ')}
                 </button>
@@ -334,7 +332,7 @@ export default function SummerFiesta() {
       <section className="py-24 bg-dark">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+
             {/* Schedule */}
             <div className="glass rounded-[32px] p-8 border border-white/10 hover:border-neon/30 transition-colors">
               <Clock className="w-8 h-8 text-neon mb-6" />

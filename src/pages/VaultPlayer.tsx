@@ -1,28 +1,117 @@
-import { useParams, Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Video as VideoIcon, Clock, Loader2, FileText, PlayCircle } from 'lucide-react'
+import {
+  ArrowLeft,
+  Clock,
+  ExternalLink,
+  FileText,
+  Loader2,
+  PlayCircle,
+  Video as VideoIcon,
+} from 'lucide-react'
+import { Navbar } from '@/components/Navbar'
+import { PgnViewer } from '@/components/PgnViewer'
 import { supabase } from '@/lib/supabase'
 import type { Video } from '@/types'
-import { PgnViewer } from '@/components/PgnViewer'
-import { useEffect, useState } from 'react'
+
+type VideoSource =
+  | { kind: 'external'; src: string }
+  | { kind: 'html5'; src: string }
+  | { kind: 'iframe'; src: string }
+  | { kind: 'missing' }
+
+function getYouTubeEmbedUrl(url: string) {
+  try {
+    const parsed = new URL(url)
+
+    if (parsed.hostname.includes('youtu.be')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean)[0]
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+    }
+
+    if (parsed.hostname.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v')
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+function getDrivePreviewUrl(url: string) {
+  if (url.includes('/preview') || url.includes('/embed')) {
+    return url
+  }
+
+  const fileMatch = url.match(/\/file\/d\/([-\w]+)/)
+  if (fileMatch) {
+    return `https://drive.google.com/file/d/${fileMatch[1]}/preview`
+  }
+
+  const openMatch = url.match(/[?&]id=([-\w]+)/)
+  if (openMatch) {
+    return `https://drive.google.com/file/d/${openMatch[1]}/preview`
+  }
+
+  return null
+}
+
+function getVideoSource(url?: null | string): VideoSource {
+  if (!url) {
+    return { kind: 'missing' }
+  }
+
+  const trimmedUrl = url.trim()
+  if (!trimmedUrl.startsWith('http')) {
+    return { kind: 'missing' }
+  }
+
+  const youTubeEmbedUrl = getYouTubeEmbedUrl(trimmedUrl)
+  if (youTubeEmbedUrl) {
+    return { kind: 'iframe', src: youTubeEmbedUrl }
+  }
+
+  const drivePreviewUrl = getDrivePreviewUrl(trimmedUrl)
+  if (drivePreviewUrl) {
+    return { kind: 'iframe', src: drivePreviewUrl }
+  }
+
+  if (/\.(mp4|webm|ogg)(\?|$)/i.test(trimmedUrl)) {
+    return { kind: 'html5', src: trimmedUrl }
+  }
+
+  if (trimmedUrl.includes('/embed')) {
+    return { kind: 'iframe', src: trimmedUrl }
+  }
+
+  return { kind: 'external', src: trimmedUrl }
+}
 
 export default function VaultPlayer() {
   const { id } = useParams<{ id: string }>()
-  const [video, setVideo] = useState<Video | null>(null)
+  const [video, setVideo] = useState<null | Video>(null)
   const [loading, setLoading] = useState(true)
   const [activePart, setActivePart] = useState<1 | 2>(1)
 
   useEffect(() => {
     window.scrollTo(0, 0)
+
     async function fetchVideo() {
-      if (!id) return
+      if (!id) {
+        setLoading(false)
+        return
+      }
+
       try {
         const { data, error } = await supabase
           .from('videos')
           .select('*')
           .eq('id', id)
           .single()
-        
+
         if (data && !error) {
           setVideo(data)
         }
@@ -32,259 +121,282 @@ export default function VaultPlayer() {
         setLoading(false)
       }
     }
+
     fetchVideo()
   }, [id])
 
+  useEffect(() => {
+    if (!video?.video_url_2 && activePart === 2) {
+      setActivePart(1)
+    }
+  }, [activePart, video?.video_url_2])
+
+  const availableParts = useMemo(() => {
+    if (!video) {
+      return []
+    }
+
+    return [
+      { id: 1 as const, label: 'Part 1', url: video.video_url },
+      ...(video.video_url_2 ? [{ id: 2 as const, label: 'Part 2', url: video.video_url_2 }] : []),
+    ]
+  }, [video])
+
+  const currentVideoUrl = activePart === 1 ? video?.video_url : video?.video_url_2
+  const videoSource = useMemo(() => getVideoSource(currentVideoUrl), [currentVideoUrl])
+  const pgnText = video?.pgn?.trim() ?? ''
+  const hasPgn = pgnText.length > 0
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-neon animate-spin" />
+      <div className="min-h-screen bg-dark">
+        <Navbar />
+        <div className="flex min-h-screen items-center justify-center px-6 pt-24">
+          <Loader2 className="h-12 w-12 animate-spin text-neon" />
+        </div>
       </div>
     )
   }
 
   if (!video) {
     return (
-      <div className="min-h-screen bg-dark pt-32 px-6 flex flex-col items-center justify-center">
-        <h2 className="text-white font-display text-4xl mb-4 uppercase">Video Not Found</h2>
-        <Link to="/videos" className="text-neon hover:underline font-body uppercase tracking-widest text-xs">Return to Vault</Link>
+      <div className="min-h-screen bg-dark">
+        <Navbar />
+        <div className="flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center">
+          <h2 className="font-display text-4xl font-black uppercase text-white">Video Not Found</h2>
+          <Link to="/videos" className="mt-4 font-body text-xs font-bold uppercase tracking-[0.3em] text-neon hover:underline">
+            Return to Vault
+          </Link>
+        </div>
       </div>
     )
   }
 
-  // Use a fallback PGN if not provided
-  const fallbackPgn = "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Na5 10. Bc2 c5 11. d4 Qc7";
-  const pgnToUse = video.pgn || fallbackPgn;
-
-  const currentVideoUrl = activePart === 1 ? video.video_url : video.video_url_2;
-
-  // Convert any Google Drive link to a proper embed URL
-  function getDriveEmbedUrl(url: string | undefined | null): string | null {
-    if (!url) return null;
-
-    // Check if it's actually a URL (not just a filename like "Lecture 1.mp4")
-    if (!url.startsWith('http')) return null;
-
-    // Already an embed/preview link
-    if (url.includes('/preview') || url.includes('/embed')) return url;
-
-    // Standard share link: https://drive.google.com/file/d/FILE_ID/view?...
-    const driveMatch = url.match(/\/file\/d\/([-\w]+)/);
-    if (driveMatch) {
-      return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-    }
-
-    // Open link: https://drive.google.com/open?id=FILE_ID
-    const openMatch = url.match(/[?&]id=([-\w]+)/);
-    if (openMatch) {
-      return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
-    }
-
-    // YouTube embed
-    if (url.includes('youtube.com') || url.includes('youtu.be')) return url;
-
-    // Direct MP4 or other URLs — return as-is
-    return url;
-  }
-
-  const embedUrl = getDriveEmbedUrl(currentVideoUrl);
-  const isMp4 = currentVideoUrl?.endsWith('.mp4') && currentVideoUrl.startsWith('http');
-
   return (
-    <div className="min-h-screen bg-dark pt-24 pb-12 px-6 flex flex-col">
-      <div className="max-w-[1600px] mx-auto w-full flex flex-col h-full flex-grow">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-6">
-            <Link 
-              to="/videos" 
-              className="w-12 h-12 flex items-center justify-center bg-white/5 hover:bg-neon hover:text-dark rounded-2xl text-white transition-all group shrink-0"
-            >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="px-3 py-1 bg-neon/10 text-neon border border-neon/30 rounded-full text-[10px] font-black uppercase tracking-widest">
-                  Now Playing
+    <div className="min-h-screen bg-dark">
+      <Navbar />
+
+      <main className="relative overflow-hidden px-6 pb-14 pt-28">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,255,46,0.10),transparent_22%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.06),transparent_24%)]" />
+
+        <div className="relative mx-auto flex w-full max-w-[1500px] flex-col gap-8">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="max-w-4xl">
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/videos"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition-all hover:border-neon/40 hover:bg-neon hover:text-dark"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+                <span className="rounded-full border border-neon/30 bg-neon/10 px-4 py-2 text-[10px] font-body font-bold uppercase tracking-[0.35em] text-neon">
+                  Vault Session
                 </span>
-                <div className="flex items-center gap-2 text-white/40 text-[10px] font-bold uppercase tracking-widest">
-                  <Clock className="w-3 h-3" />
-                  {video.duration || 'N/A'}
-                </div>
-              </div>
-              <h1 className="font-display text-2xl md:text-4xl font-black text-white uppercase leading-tight">{video.title}</h1>
-            </div>
-          </div>
-
-          {video.video_url_2 && (
-            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 shrink-0 hidden md:flex">
-              <button
-                onClick={() => setActivePart(1)}
-                className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center gap-2 ${
-                  activePart === 1
-                    ? 'bg-neon text-dark shadow-neon'
-                    : 'text-white/40 hover:text-white'
-                }`}
-              >
-                <PlayCircle className="w-4 h-4" /> Part 1
-              </button>
-              <button
-                onClick={() => setActivePart(2)}
-                className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center gap-2 ${
-                  activePart === 2
-                    ? 'bg-neon text-dark shadow-neon'
-                    : 'text-white/40 hover:text-white'
-                }`}
-              >
-                <PlayCircle className="w-4 h-4" /> Part 2
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Parts Toggle */}
-        {video.video_url_2 && (
-          <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 mb-6 md:hidden">
-            <button
-              onClick={() => setActivePart(1)}
-              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
-                activePart === 1
-                  ? 'bg-neon text-dark shadow-neon'
-                  : 'text-white/40 hover:text-white'
-              }`}
-            >
-              Part 1
-            </button>
-            <button
-              onClick={() => setActivePart(2)}
-              className={`flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
-                activePart === 2
-                  ? 'bg-neon text-dark shadow-neon'
-                  : 'text-white/40 hover:text-white'
-              }`}
-            >
-              Part 2
-            </button>
-          </div>
-        )}
-
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow h-[calc(100vh-200px)] min-h-[600px]">
-          
-          {/* Left Column: Video Player */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col h-full">
-            <div className="bg-black rounded-[32px] overflow-hidden border border-white/10 relative w-full flex-grow shadow-2xl glass">
-              {embedUrl ? (
-                isMp4 ? (
-                  <video 
-                    src={embedUrl}
-                    controls
-                    controlsList="nodownload"
-                    className="absolute inset-0 w-full h-full object-contain bg-black"
-                  />
-                ) : (
-                  // Google Drive blocks iframes — open in Drive instead
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-black/80 p-8">
-                    <div className="text-center">
-                      <div className="w-20 h-20 rounded-full bg-neon/10 border border-neon/30 flex items-center justify-center mx-auto mb-4 hover:bg-neon/20 transition-colors">
-                        <VideoIcon className="w-10 h-10 text-neon" />
-                      </div>
-                      <h3 className="font-display text-2xl font-black text-white uppercase mb-2">
-                        {video.title}
-                      </h3>
-                      <p className="text-white/40 font-body text-sm mb-6">
-                        Google Drive videos cannot be embedded in-page.<br />Click below to watch the lecture.
-                      </p>
-                      <a
-                        href={currentVideoUrl!}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-neon text-dark font-display font-black text-sm uppercase tracking-widest rounded-2xl hover:shadow-neon-lg transition-all active:scale-95"
-                      >
-                        <PlayCircle className="w-5 h-5" />
-                        Watch on Google Drive
-                      </a>
-                      {video.video_url_2 && (
-                        <a
-                          href={video.video_url_2}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-3 inline-flex items-center gap-3 px-8 py-4 bg-white/10 text-white font-display font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-white/20 transition-all active:scale-95 ml-3"
-                        >
-                          <PlayCircle className="w-5 h-5" />
-                          Part 2
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                )
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/30 gap-4 p-8 text-center">
-                  <VideoIcon className="w-16 h-16 opacity-20 text-neon" />
-                  <p className="font-display font-bold text-lg uppercase tracking-widest text-white">Video Not Yet Available</p>
-                  <p className="font-body text-sm text-white/50 max-w-md">
-                    The video link for this lecture hasn't been added yet. Please update <span className="text-neon font-bold">{currentVideoUrl}</span> in Supabase with a valid Google Drive share link.
-                  </p>
-                  <div className="mt-2 px-4 py-2 bg-neon/10 rounded-xl border border-neon/20 text-left">
-                    <p className="text-[10px] text-neon font-bold uppercase tracking-widest mb-1">How to add a video link:</p>
-                    <p className="text-[11px] text-white/50">In Google Drive → right-click video → Share → Copy link → paste in Supabase videos table → video_url column</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <motion.div 
-              className="mt-6 glass border border-white/10 rounded-3xl p-8 flex flex-col sm:flex-row gap-6 justify-between items-start"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-px w-6 bg-neon" />
-                  <p className="text-neon text-[10px] font-bold uppercase tracking-[0.3em]">Lecture Overview</p>
-                </div>
-                <p className="text-white/70 font-body leading-relaxed text-sm">
-                  {video.description}
-                </p>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/50">
+                  <Clock className="h-3.5 w-3.5" />
+                  {video.duration || 'Duration pending'}
+                </span>
+                {hasPgn ? (
+                  <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/70">
+                    PGN Ready
+                  </span>
+                ) : null}
               </div>
 
-              {video.pgn_file && (
-                <div className="bg-dark/50 border border-white/5 rounded-2xl p-4 shrink-0 w-full sm:w-auto">
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Attached Material</p>
-                  <div className="flex items-center gap-3 text-white">
-                    <div className="w-10 h-10 rounded-full bg-neon/10 flex items-center justify-center shrink-0">
-                      <FileText className="w-4 h-4 text-neon" />
-                    </div>
-                    <span className="font-body text-sm truncate max-w-[200px]">{video.pgn_file}</span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </div>
+              <h1 className="font-display text-4xl font-black uppercase leading-none text-white md:text-6xl">
+                {video.title}
+              </h1>
+              <p className="mt-4 max-w-3xl font-body text-base leading-relaxed text-white/55 md:text-lg">
+                {video.description || 'Replay the lecture, review the lines, and move between the video and board without losing context.'}
+              </p>
+            </div>
 
-          {/* Right Column: PGN Viewer */}
-          <div className="lg:col-span-5 xl:col-span-4 h-full min-h-[600px] glass border border-white/10 rounded-[32px] overflow-hidden flex flex-col relative">
-            {!video.pgn ? (
-              <div className="absolute inset-0 z-10 bg-dark/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center border-l border-white/5">
-                <FileText className="w-12 h-12 text-white/20 mb-4" />
-                <h3 className="font-display text-xl font-bold text-white uppercase mb-2">No PGN Available</h3>
-                <p className="text-white/40 font-body text-sm">
-                  The PGN notation for this lecture has not been uploaded yet. When available, the interactive board will appear here.
-                </p>
-                {video.pgn_file && (
-                  <div className="mt-6 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-                    <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-1">Expected File</span>
-                    <span className="text-neon font-body text-sm">{video.pgn_file}</span>
-                  </div>
-                )}
+            {availableParts.length > 1 ? (
+              <div className="flex flex-wrap items-center gap-2 rounded-[24px] border border-white/10 bg-black/25 p-2">
+                {availableParts.map((part) => (
+                  <button
+                    key={part.id}
+                    type="button"
+                    onClick={() => setActivePart(part.id)}
+                    className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-[11px] font-body font-bold uppercase tracking-[0.3em] transition-all ${
+                      activePart === part.id
+                        ? 'bg-neon text-dark shadow-neon'
+                        : 'text-white/45 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <PlayCircle className="h-4 w-4" />
+                    {part.label}
+                  </button>
+                ))}
               </div>
             ) : null}
-            <PgnViewer pgn={pgnToUse} />
           </div>
 
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.95fr)]">
+            <div className="space-y-6">
+              <motion.section
+                className="overflow-hidden rounded-[34px] border border-white/10 bg-black/35 shadow-[0_26px_70px_rgba(0,0,0,0.32)]"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="border-b border-white/10 px-6 py-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">
+                        Video Player
+                      </p>
+                      <p className="mt-2 font-body text-sm text-white/50">
+                        {availableParts.find((part) => part.id === activePart)?.label || 'Main lecture'}
+                      </p>
+                    </div>
+                    {videoSource.kind === 'external' ? (
+                      <a
+                        href={videoSource.src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-body font-bold uppercase tracking-[0.3em] text-white/70 transition-all hover:border-neon/40 hover:text-white"
+                      >
+                        Open Source
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="relative aspect-video bg-black">
+                  {videoSource.kind === 'html5' ? (
+                    <video
+                      src={videoSource.src}
+                      controls
+                      controlsList="nodownload"
+                      className="absolute inset-0 h-full w-full object-contain"
+                    />
+                  ) : null}
+
+                  {videoSource.kind === 'iframe' ? (
+                    <iframe
+                      src={videoSource.src}
+                      className="absolute inset-0 h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={video.title}
+                    />
+                  ) : null}
+
+                  {videoSource.kind === 'external' ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-8 text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-neon/30 bg-neon/10">
+                        <VideoIcon className="h-10 w-10 text-neon" />
+                      </div>
+                      <div>
+                        <h2 className="font-display text-3xl font-black uppercase text-white">{video.title}</h2>
+                        <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-white/50">
+                          This source is best opened in a dedicated tab. Use the link below to watch the lecture at full quality.
+                        </p>
+                      </div>
+                      <a
+                        href={videoSource.src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 rounded-2xl bg-neon px-7 py-4 font-body font-bold uppercase tracking-[0.25em] text-dark transition-all hover:shadow-neon"
+                      >
+                        Watch Lecture
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                  ) : null}
+
+                  {videoSource.kind === 'missing' ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-8 text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                        <VideoIcon className="h-10 w-10 text-white/35" />
+                      </div>
+                      <div>
+                        <h2 className="font-display text-3xl font-black uppercase text-white">Video Not Yet Available</h2>
+                        <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-white/50">
+                          Add a public Google Drive, YouTube, or direct MP4 link in the `video_url` field to activate this lecture.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.section>
+
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <motion.section
+                  className="glass rounded-[30px] border border-white/10 p-6"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                >
+                  <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-neon/75">
+                    Lecture Overview
+                  </p>
+                  <p className="mt-4 font-body leading-relaxed text-white/65">
+                    {video.description || 'Add a session overview so students understand the theme, key lines, and practical takeaways before diving into the analysis board.'}
+                  </p>
+                </motion.section>
+
+                <motion.section
+                  className="glass rounded-[30px] border border-white/10 p-6"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-neon/75">
+                    Study Materials
+                  </p>
+
+                  {video.pgn_file ? (
+                    <div className="mt-4 rounded-[22px] border border-white/10 bg-dark/50 p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-neon/25 bg-neon/10">
+                          <FileText className="h-4 w-4 text-neon" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-body font-bold uppercase tracking-[0.2em] text-white/35">Attached PGN</p>
+                          <p className="truncate font-body text-sm text-white">{video.pgn_file}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-4 font-body text-sm leading-relaxed text-white/50">
+                      No separate study attachment has been linked for this lecture yet.
+                    </p>
+                  )}
+                </motion.section>
+              </div>
+            </div>
+
+            <motion.aside
+              className="overflow-hidden rounded-[34px] border border-white/10 bg-black/25"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+            >
+              {hasPgn ? (
+                <PgnViewer key={pgnText} pgn={pgnText} />
+              ) : (
+                <div className="flex h-full min-h-[560px] flex-col items-center justify-center px-8 text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                    <FileText className="h-9 w-9 text-white/30" />
+                  </div>
+                  <h2 className="mt-6 font-display text-3xl font-black uppercase text-white">PGN Not Added Yet</h2>
+                  <p className="mt-4 max-w-sm font-body text-sm leading-relaxed text-white/50">
+                    Upload the game notation in the `pgn` field and the interactive analysis board will appear here instantly.
+                  </p>
+                  {video.pgn_file ? (
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                      <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Expected File</p>
+                      <p className="mt-2 font-body text-sm text-neon">{video.pgn_file}</p>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </motion.aside>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

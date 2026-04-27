@@ -22,7 +22,7 @@ const products = [
 
 export default function Store() {
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-dark ">
       <Navbar />
 
       <main className="pt-32 pb-32 px-6">

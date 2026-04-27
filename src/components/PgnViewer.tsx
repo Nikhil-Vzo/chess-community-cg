@@ -1,140 +1,351 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
-import { ChevronLeft, ChevronRight, SkipBack, SkipForward } from 'lucide-react'
+import { ChevronLeft, ChevronRight, SkipBack, SkipForward, RefreshCcw } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PgnViewerProps {
   pgn: string
 }
 
-export function PgnViewer({ pgn }: PgnViewerProps) {
-  const game = useMemo(() => new Chess(), [])
-  const [history, setHistory] = useState<string[]>([])
-  const [movesText, setMovesText] = useState<string[]>([])
-  const [currentMoveIndex, setCurrentMoveIndex] = useState(0)
+interface ParsedMove {
+  afterFen: string
+  beforeFen: string
+  color: 'b' | 'w'
+  moveNumber: number
+  san: string
+}
 
-  useEffect(() => {
-    try {
-      game.loadPgn(pgn)
-      const moves = game.history({ verbose: true })
-      setHistory(moves.map(m => m.before))
-      setMovesText(moves.map(m => m.san))
-      
-      // Store the final fen as well
-      const finalFens = [...moves.map(m => m.before)]
-      if (moves.length > 0) {
-        finalFens.push(moves[moves.length - 1].after)
-      } else {
-        finalFens.push(game.fen())
-      }
-      setHistory(finalFens)
-      setCurrentMoveIndex(0)
-    } catch (e) {
-      console.error("Invalid PGN", e)
+interface ParsedGame {
+  error: null | string
+  headers: Record<string, string>
+  moves: ParsedMove[]
+  positions: string[]
+}
+
+const START_FEN = new Chess().fen()
+
+function parsePgn(pgn: string): ParsedGame {
+  const game = new Chess()
+  const trimmedPgn = pgn.trim()
+
+  if (!trimmedPgn) {
+    return {
+      error: null,
+      headers: game.getHeaders(),
+      moves: [],
+      positions: [game.fen()],
     }
-  }, [pgn, game])
-
-  const currentFen = history[currentMoveIndex] || new Chess().fen()
-  const totalMoves = history.length > 0 ? history.length - 1 : 0
-
-  const handleSkipBack = () => setCurrentMoveIndex(0)
-  const handlePrev = () => setCurrentMoveIndex(prev => Math.max(0, prev - 1))
-  const handleNext = () => setCurrentMoveIndex(prev => Math.min(totalMoves, prev + 1))
-  const handleSkipForward = () => setCurrentMoveIndex(totalMoves)
-
-  // Pair moves into white and black for display
-  const movePairs = []
-  for (let i = 0; i < movesText.length; i += 2) {
-    movePairs.push({
-      white: movesText[i],
-      black: movesText[i + 1] || '',
-      index: i / 2 + 1
-    })
   }
 
+  try {
+    game.loadPgn(trimmedPgn)
+    const verboseMoves = game.history({ verbose: true })
+    const positions = verboseMoves.length > 0
+      ? [verboseMoves[0].before, ...verboseMoves.map((move) => move.after)]
+      : [game.fen()]
+
+    return {
+      error: null,
+      headers: game.getHeaders(),
+      moves: verboseMoves.map((move, index) => ({
+        afterFen: move.after,
+        beforeFen: move.before,
+        color: move.color,
+        moveNumber: Math.floor(index / 2) + 1,
+        san: move.san,
+      })),
+      positions,
+    }
+  } catch {
+    return {
+      error: 'This PGN could not be parsed. Check the notation formatting or upload a clean PGN text block.',
+      headers: game.getHeaders(),
+      moves: [],
+      positions: [START_FEN],
+    }
+  }
+}
+
+export function PgnViewer({ pgn }: PgnViewerProps) {
+  const parsedGame = useMemo(() => parsePgn(pgn), [pgn])
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0)
+  const [orientation, setOrientation] = useState<'black' | 'white'>('white')
+  const moveRefs = useRef<Array<HTMLButtonElement | null>>([])
+
+  const totalMoves = parsedGame.moves.length
+  const currentFen = parsedGame.positions[currentMoveIndex] ?? START_FEN
+  const currentMove = currentMoveIndex > 0 ? parsedGame.moves[currentMoveIndex - 1] : null
+  const currentPlayers = [parsedGame.headers.White, parsedGame.headers.Black]
+    .filter((player) => player && player !== '?')
+    .join(' vs ')
+
+  const movePairs = useMemo(() => {
+    const pairs: Array<{
+      black?: ParsedMove
+      blackIndex: number
+      turn: number
+      white?: ParsedMove
+      whiteIndex: number
+    }> = []
+
+    for (let index = 0; index < parsedGame.moves.length; index += 2) {
+      pairs.push({
+        black: parsedGame.moves[index + 1],
+        blackIndex: parsedGame.moves[index + 1] ? index + 2 : 0,
+        turn: Math.floor(index / 2) + 1,
+        white: parsedGame.moves[index],
+        whiteIndex: index + 1,
+      })
+    }
+
+    return pairs
+  }, [parsedGame.moves])
+
+  useEffect(() => {
+    if (currentMoveIndex === 0) {
+      return
+    }
+
+    moveRefs.current[currentMoveIndex - 1]?.scrollIntoView({
+      block: 'nearest',
+      behavior: 'smooth',
+    })
+  }, [currentMoveIndex])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      const isTypingTarget = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA'
+
+      if (isTypingTarget) {
+        return
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setCurrentMoveIndex((previous) => Math.max(0, previous - 1))
+      }
+
+      if (event.key === 'ArrowRight') {
+        setCurrentMoveIndex((previous) => Math.min(totalMoves, previous + 1))
+      }
+
+      if (event.key === 'Home') {
+        setCurrentMoveIndex(0)
+      }
+
+      if (event.key === 'End') {
+        setCurrentMoveIndex(totalMoves)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [totalMoves])
+
+  const eventName = parsedGame.headers.Event && parsedGame.headers.Event !== '?' ? parsedGame.headers.Event : 'Interactive Replay'
+  const resultLabel = parsedGame.headers.Result && parsedGame.headers.Result !== '?' ? parsedGame.headers.Result : 'Unfinished'
+
   return (
-    <div className="flex flex-col h-full bg-card-dark border border-white/10 rounded-lg overflow-hidden">
-      <div className="p-4 bg-white/5 border-b border-white/10 flex items-center justify-between">
-        <h3 className="font-display font-bold text-white uppercase tracking-wider">Analysis Board</h3>
-        <span className="text-neon text-sm font-body">Move {currentMoveIndex}/{totalMoves}</span>
-      </div>
-      
-      <div className="p-6 flex-grow flex flex-col items-center justify-center min-h-[300px] w-full">
-        <div className="w-full max-w-[400px] aspect-square rounded-md overflow-hidden shadow-2xl bg-[#2a3b2c]/20 relative">
-          {(() => {
-            const Board = Chessboard as any;
-            return (
-              <Board 
-                key={currentFen}
-            position={currentFen} 
-            boardOrientation="white"
-            arePiecesDraggable={false}
-            animationDuration={200}
-            customDarkSquareStyle={{ backgroundColor: '#4a6b52' }}
-            customLightSquareStyle={{ backgroundColor: '#f0f0f0' }}
-          />
-            );
-          })()}
+    <div className="flex h-full min-h-[560px] flex-col bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] text-white">
+      <div className="border-b border-white/10 p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-[10px] font-body font-bold uppercase tracking-[0.4em] text-neon/75">
+              PGN Replay
+            </p>
+            <h3 className="mt-3 font-display text-2xl font-black uppercase tracking-tight text-white">
+              {eventName}
+            </h3>
+            <p className="mt-2 max-w-xl text-sm font-body leading-relaxed text-white/50">
+              {currentPlayers || 'Use the controls or arrow keys to step through the game move by move.'}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-body font-bold uppercase tracking-[0.25em] text-white/60">
+              {currentMove ? `Move ${currentMoveIndex} / ${totalMoves}` : 'Start Position'}
+            </div>
+            <button
+              type="button"
+              onClick={() => setOrientation((previous) => previous === 'white' ? 'black' : 'white')}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-body font-bold uppercase tracking-[0.25em] text-white/70 transition-colors hover:border-neon/40 hover:text-white"
+            >
+              <RefreshCcw className="h-3.5 w-3.5" />
+              Flip Board
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="p-4 bg-white/5 flex flex-col gap-4">
-        {/* Moves display */}
-        <div className="h-24 overflow-y-auto font-body text-sm bg-dark/50 rounded p-3 flex flex-col gap-1 custom-scrollbar">
-          {movePairs.map((pair, idx) => {
-            const whiteMoveIndex = idx * 2 + 1;
-            const blackMoveIndex = idx * 2 + 2;
-            return (
-              <div key={idx} className="flex gap-4">
-                <span className="text-white/40 w-6">{pair.index}.</span>
-                <span 
-                  className={`flex-1 cursor-pointer hover:text-neon transition-colors ${currentMoveIndex === whiteMoveIndex ? 'text-neon font-bold' : 'text-white/70'}`}
-                  onClick={() => setCurrentMoveIndex(whiteMoveIndex)}
-                >
-                  {pair.white}
-                </span>
-                <span 
-                  className={`flex-1 cursor-pointer hover:text-neon transition-colors ${currentMoveIndex === blackMoveIndex ? 'text-neon font-bold' : 'text-white/70'}`}
-                  onClick={() => pair.black && setCurrentMoveIndex(blackMoveIndex)}
-                >
-                  {pair.black}
-                </span>
+      <div className="grid flex-1 gap-5 p-5 xl:grid-cols-[minmax(0,1fr)_minmax(300px,340px)]">
+        <div className="space-y-5">
+          <div className="rounded-[30px] border border-white/10 bg-[#15110f] p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+            <div className="mx-auto max-w-[460px]">
+              <Chessboard
+                options={{
+                  position: currentFen,
+                  boardOrientation: orientation,
+                  allowDragging: false,
+                  animationDurationInMs: 160,
+                  boardStyle: {
+                    borderRadius: '22px',
+                    overflow: 'hidden',
+                  },
+                  darkSquareStyle: { backgroundColor: '#647057' },
+                  lightSquareStyle: { backgroundColor: '#e8dbc1' },
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <button
+              type="button"
+              onClick={() => setCurrentMoveIndex(0)}
+              disabled={currentMoveIndex === 0}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <SkipBack className="h-4 w-4" />
+              Start
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentMoveIndex((previous) => Math.max(0, previous - 1))}
+              disabled={currentMoveIndex === 0}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentMoveIndex((previous) => Math.min(totalMoves, previous + 1))}
+              disabled={currentMoveIndex === totalMoves}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-neon px-4 py-3 text-sm font-body font-bold text-dark transition-all hover:shadow-neon disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentMoveIndex(totalMoves)}
+              disabled={currentMoveIndex === totalMoves}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              End
+              <SkipForward className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
+              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Current Move</p>
+              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+                {currentMove?.san || 'Start'}
+              </p>
+            </div>
+            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
+              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Side To Move</p>
+              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+                {currentMoveIndex === totalMoves ? (totalMoves % 2 === 0 ? 'White' : 'Black') : currentMove?.color === 'w' ? 'Black' : 'White'}
+              </p>
+            </div>
+            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
+              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Result</p>
+              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+                {resultLabel}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex min-h-[280px] flex-col rounded-[30px] border border-white/10 bg-black/20">
+          <div className="border-b border-white/10 px-5 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Move List</p>
+                <p className="mt-2 font-body text-sm text-white/55">
+                  Jump to any ply instantly.
+                </p>
               </div>
-            )
-          })}
-        </div>
+              <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-body font-bold uppercase tracking-[0.3em] text-neon/80">
+                {totalMoves} plies
+              </div>
+            </div>
+          </div>
 
-        {/* Buttons */}
-        <div className="flex justify-center items-center gap-4">
-          <button 
-            onClick={handleSkipBack} 
-            disabled={currentMoveIndex === 0}
-            className="p-2 rounded hover:bg-white/10 disabled:opacity-30 transition-all text-white/70 hover:text-white"
-          >
-            <SkipBack className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={handlePrev} 
-            disabled={currentMoveIndex === 0}
-            className="p-2 rounded hover:bg-white/10 disabled:opacity-30 transition-all text-white/70 hover:text-white"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={handleNext} 
-            disabled={currentMoveIndex === totalMoves}
-            className="p-2 rounded hover:bg-white/10 disabled:opacity-30 transition-all text-white/70 hover:text-white"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={handleSkipForward} 
-            disabled={currentMoveIndex === totalMoves}
-            className="p-2 rounded hover:bg-white/10 disabled:opacity-30 transition-all text-white/70 hover:text-white"
-          >
-            <SkipForward className="w-5 h-5" />
-          </button>
+          <div className="flex-1 overflow-y-auto p-4">
+            {parsedGame.error ? (
+              <div className="rounded-[24px] border border-red-400/20 bg-red-400/5 p-5">
+                <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-red-300/80">Invalid PGN</p>
+                <p className="mt-3 text-sm font-body leading-relaxed text-white/65">
+                  {parsedGame.error}
+                </p>
+              </div>
+            ) : totalMoves === 0 ? (
+              <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+                <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">No Moves</p>
+                <p className="mt-3 text-sm font-body leading-relaxed text-white/60">
+                  This PGN is attached, but it does not include any playable moves yet.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {movePairs.map((pair) => {
+                  return (
+                    <div key={pair.turn} className="grid grid-cols-[44px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 rounded-2xl border border-transparent bg-white/[0.03] p-2">
+                      <span className="text-center text-sm font-body font-bold text-white/30">
+                        {pair.turn}.
+                      </span>
+                      <button
+                        type="button"
+                        ref={(element) => {
+                          if (pair.whiteIndex > 0) {
+                            moveRefs.current[pair.whiteIndex - 1] = element
+                          }
+                        }}
+                        onClick={() => setCurrentMoveIndex(pair.whiteIndex)}
+                        className={cn(
+                          'rounded-xl px-3 py-2 text-left text-sm font-body font-semibold transition-all',
+                          currentMoveIndex === pair.whiteIndex
+                            ? 'bg-neon text-dark shadow-neon'
+                            : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white',
+                        )}
+                      >
+                        {pair.white?.san}
+                      </button>
+                      <button
+                        type="button"
+                        ref={(element) => {
+                          if (pair.blackIndex > 0) {
+                            moveRefs.current[pair.blackIndex - 1] = element
+                          }
+                        }}
+                        onClick={() => {
+                          if (pair.blackIndex > 0) {
+                            setCurrentMoveIndex(pair.blackIndex)
+                          }
+                        }}
+                        className={cn(
+                          'rounded-xl px-3 py-2 text-left text-sm font-body font-semibold transition-all',
+                          pair.blackIndex === 0 ? 'cursor-default bg-transparent text-white/20' : '',
+                          pair.blackIndex > 0 && currentMoveIndex === pair.blackIndex
+                            ? 'bg-neon text-dark shadow-neon'
+                            : pair.blackIndex > 0
+                              ? 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
+                              : '',
+                        )}
+                        disabled={pair.blackIndex === 0}
+                      >
+                        {pair.black?.san || '...'}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
