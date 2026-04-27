@@ -113,7 +113,16 @@ export default function Payment() {
                 user?.id, 
                 event.id, 
                 response.razorpay_payment_id,
-                { email: formData.email, name: formData.name, phone: formData.phone, age: formData.age }
+                { 
+                  email: formData.email, 
+                  name: formData.name, 
+                  phone: formData.phone, 
+                  dob: formData.dob,
+                  gender: formData.gender,
+                  state: formData.state,
+                  district: formData.district,
+                  fide_id: formData.fide_id,
+                }
               )
               
               navigate(`/receipt/${id}`, {
@@ -237,7 +246,7 @@ export default function Payment() {
               <div className="border-t my-3" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }} />
               <div className="flex justify-between items-center">
                 <span className="font-display font-bold text-lg" style={{ color: '#1c1917' }}>Total Amount</span>
-                <span className="font-display font-bold text-2xl text-neon">Rs. {event.entryFee.toLocaleString()}</span>
+                <span className="font-display font-bold text-2xl text-neon">Rs. 900 + Service Tax</span>
               </div>
             </div>
           </motion.div>
@@ -262,16 +271,24 @@ export default function Payment() {
                 <Mail className="w-4 h-4" style={{ color: '#5c3a21' }} />
                 <span className="font-body text-sm" style={{ color: '#1c1917' }}>{formData.email}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Hash className="w-4 h-4" style={{ color: '#5c3a21' }} />
-                <span className="font-body text-sm" style={{ color: '#1c1917' }}>Age: {formData.age}</span>
-              </div>
-              {formData.rating && (
+              {formData.fide_id && (
                 <div className="flex items-center gap-3">
                   <Star className="w-4 h-4" style={{ color: '#5c3a21' }} />
-                  <span className="font-body text-sm" style={{ color: '#1c1917' }}>Rating: {formData.rating}</span>
+                  <span className="font-body text-sm" style={{ color: '#1c1917' }}>FIDE ID: {formData.fide_id}</span>
                 </div>
               )}
+              <div className="flex items-center gap-3">
+                <Calendar className="w-4 h-4" style={{ color: '#5c3a21' }} />
+                <span className="font-body text-sm" style={{ color: '#1c1917' }}>DOB: {formData.dob}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <User className="w-4 h-4" style={{ color: '#5c3a21' }} />
+                <span className="font-body text-sm" style={{ color: '#1c1917' }}>Gender: {formData.gender}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-4 h-4" style={{ color: '#5c3a21' }} />
+                <span className="font-body text-sm" style={{ color: '#1c1917' }}>{formData.district}, {formData.state}</span>
+              </div>
             </div>
           </motion.div>
 
@@ -294,7 +311,7 @@ export default function Payment() {
               ) : (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Pay Rs. {event.entryFee.toLocaleString()} via Razorpay
+                  Pay Rs. 900 + Service Tax
                 </>
               )}
             </button>

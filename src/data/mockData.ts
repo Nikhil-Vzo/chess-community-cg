@@ -10,7 +10,7 @@ export const events: ChessEvent[] = [
     location: 'Mumbai Chess Academy, Andheri West',
     type: 'camp',
     category: 'upcoming',
-    entryFee: 15000,
+    entryFee: 900,
     image: '/images/camp-poster-1.jpg',
     rules: [
       'Participants must have a minimum FIDE rating of 1400',
@@ -34,7 +34,7 @@ export const events: ChessEvent[] = [
     location: 'Delhi Public School, RK Puram',
     type: 'tournament',
     category: 'upcoming',
-    entryFee: 500,
+    entryFee: 900,
     image: '/images/tournament-1.jpg',
     rules: [
       'Open to all players under 16 years of age',
@@ -58,7 +58,7 @@ export const events: ChessEvent[] = [
     location: 'Bangalore Chess Club, Indiranagar',
     type: 'camp',
     category: 'upcoming',
-    entryFee: 3500,
+    entryFee: 900,
     image: '/images/camp-poster-2.jpg',
     rules: [
       'Open to all rated players',
@@ -86,7 +86,7 @@ export const events: ChessEvent[] = [
     location: 'Hyderabad Chess Academy, Banjara Hills',
     type: 'camp',
     category: 'upcoming',
-    entryFee: 8000,
+    entryFee: 900,
     image: '/images/camp-youth.jpg',
     rules: [
       'Age group: 6-14 years',
@@ -103,7 +103,7 @@ export const events: ChessEvent[] = [
     location: 'Pune Chess Association, Deccan Gymkhana',
     type: 'tournament',
     category: 'upcoming',
-    entryFee: 750,
+    entryFee: 900,
     image: '/images/tournament-3.jpg',
     rules: [
       '9-round Swiss system',
@@ -140,7 +140,7 @@ export const events: ChessEvent[] = [
     location: 'Kolkata, West Bengal',
     type: 'tournament',
     category: 'upcoming',
-    entryFee: 2000,
+    entryFee: 900,
     image: '/images/tournament-1.jpg',
     rules: [
       '9-round Swiss system',

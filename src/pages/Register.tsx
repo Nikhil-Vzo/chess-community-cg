@@ -15,7 +15,9 @@ import {
   Trophy, 
   CheckCircle,
   AlertCircle,
-  Zap
+  Zap,
+  Calendar,
+  MapPin
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -49,9 +51,12 @@ export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    age: '',
     fide_id: '',
+    phone: '',
+    dob: '',
+    gender: '',
+    state: '',
+    district: '',
   })
   
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -76,11 +81,14 @@ export default function Register() {
 
     setUseProfile(true)
     setFormData({
-      name: profile.has_fide_id ? (user?.name || '') : (profile.name || user?.name || ''),
+      name: profile.name || user?.name || '',
       email: user?.email || '',
-      phone: profile.phone || '',
-      age: profile.dob ? String(new Date().getFullYear() - new Date(profile.dob).getFullYear()) : '',
       fide_id: profile.fide_id || '',
+      phone: profile.phone || '',
+      dob: profile.dob || '',
+      gender: profile.gender || '',
+      state: profile.city_state ? profile.city_state.split(',')[1]?.trim() || '' : '',
+      district: profile.city_state ? profile.city_state.split(',')[0]?.trim() || '' : '',
     })
     setErrors({})
     toast.success('Profile data applied!')
@@ -112,6 +120,10 @@ export default function Register() {
     
     if (!formData.name) newErrors.name = 'Full name is required'
     if (!formData.email) newErrors.email = 'Email is required'
+    if (!formData.dob) newErrors.dob = 'Date of Birth is required'
+    if (!formData.gender) newErrors.gender = 'Gender is required'
+    if (!formData.state) newErrors.state = 'State is required'
+    if (!formData.district) newErrors.district = 'District is required'
     
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required'
@@ -119,15 +131,6 @@ export default function Register() {
       const digitCount = formData.phone.replace(/[^0-9]/g, '').length
       if (digitCount < 10) {
         newErrors.phone = 'Must be at least 10 digits'
-      }
-    }
-    
-    if (!formData.age) {
-      newErrors.age = 'Age is required'
-    } else {
-      const ageNum = parseInt(formData.age, 10)
-      if (isNaN(ageNum) || ageNum < 4 || ageNum > 100) {
-        newErrors.age = 'Age must be between 4 and 100'
       }
     }
 
@@ -256,60 +259,10 @@ export default function Register() {
                 {errors.email && <p className="text-red-400 text-xs ml-1 mt-1">{errors.email}</p>}
               </div>
 
-              {/* Phone and Age Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Phone */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Phone Number</label>
-                  <div className="relative">
-                    <Hash className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.phone ? 'text-red-400' : 'text-white/20'}`} />
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => {
-                        setFormData({ ...formData, phone: e.target.value })
-                        if (errors.phone) setErrors({...errors, phone: ''})
-                      }}
-                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
-                        errors.phone ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
-                      }`}
-                      placeholder="98765 43210"
-                    />
-                  </div>
-                  {errors.phone && <p className="text-red-400 text-xs ml-1 mt-1">{errors.phone}</p>}
-                </div>
-
-                {/* Age */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Player Age</label>
-                  <div className="relative">
-                    <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.age ? 'text-red-400' : 'text-white/20'}`} />
-                    <input
-                      type="number"
-                      min="4"
-                      max="100"
-                      value={formData.age}
-                      onChange={(e) => {
-                        setFormData({ ...formData, age: e.target.value })
-                        if (errors.age) setErrors({...errors, age: ''})
-                      }}
-                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
-                        errors.age ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
-                      }`}
-                      placeholder="Enter age (e.g., 12)"
-                    />
-                  </div>
-                  {errors.age && <p className="text-red-400 text-xs ml-1 mt-1">{errors.age}</p>}
-                </div>
-              </div>
-
               {/* FIDE ID */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center px-1">
                   <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">FIDE ID (Optional)</label>
-                  {!profile?.has_fide_id && (
-                    <span className="text-[8px] font-black text-neon uppercase tracking-widest bg-neon/10 px-2 py-0.5 rounded">Not on Profile</span>
-                  )}
                 </div>
                 <div className="relative">
                   <Trophy className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
@@ -322,6 +275,119 @@ export default function Register() {
                   />
                 </div>
               </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Phone Number</label>
+                <div className="relative">
+                  <Hash className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.phone ? 'text-red-400' : 'text-white/20'}`} />
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      setFormData({ ...formData, phone: e.target.value })
+                      if (errors.phone) setErrors({...errors, phone: ''})
+                    }}
+                    className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                      errors.phone ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                    }`}
+                    placeholder="98765 43210"
+                  />
+                </div>
+                {errors.phone && <p className="text-red-400 text-xs ml-1 mt-1">{errors.phone}</p>}
+              </div>
+
+              {/* DOB and Gender Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Date of Birth */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Date of Birth</label>
+                  <div className="relative">
+                    <Calendar className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.dob ? 'text-red-400' : 'text-white/20'}`} />
+                    <input
+                      type="date"
+                      value={formData.dob}
+                      onChange={(e) => {
+                        setFormData({ ...formData, dob: e.target.value })
+                        if (errors.dob) setErrors({...errors, dob: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                        errors.dob ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
+                    />
+                  </div>
+                  {errors.dob && <p className="text-red-400 text-xs ml-1 mt-1">{errors.dob}</p>}
+                </div>
+
+                {/* Gender */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Gender</label>
+                  <div className="relative">
+                    <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.gender ? 'text-red-400' : 'text-white/20'}`} />
+                    <select
+                      value={formData.gender}
+                      onChange={(e) => {
+                        setFormData({ ...formData, gender: e.target.value })
+                        if (errors.gender) setErrors({...errors, gender: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all appearance-none ${
+                        errors.gender ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
+                    >
+                      <option value="" disabled className="bg-dark">Select Gender</option>
+                      <option value="Male" className="bg-dark">Male</option>
+                      <option value="Female" className="bg-dark">Female</option>
+                      <option value="Other" className="bg-dark">Other</option>
+                    </select>
+                  </div>
+                  {errors.gender && <p className="text-red-400 text-xs ml-1 mt-1">{errors.gender}</p>}
+                </div>
+              </div>
+
+              {/* State and District Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* State */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">State</label>
+                  <div className="relative">
+                    <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.state ? 'text-red-400' : 'text-white/20'}`} />
+                    <input
+                      type="text"
+                      value={formData.state}
+                      onChange={(e) => {
+                        setFormData({ ...formData, state: e.target.value })
+                        if (errors.state) setErrors({...errors, state: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                        errors.state ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
+                      placeholder="e.g. Chhattisgarh"
+                    />
+                  </div>
+                  {errors.state && <p className="text-red-400 text-xs ml-1 mt-1">{errors.state}</p>}
+                </div>
+
+                {/* District */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">District</label>
+                  <div className="relative">
+                    <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.district ? 'text-red-400' : 'text-white/20'}`} />
+                    <input
+                      type="text"
+                      value={formData.district}
+                      onChange={(e) => {
+                        setFormData({ ...formData, district: e.target.value })
+                        if (errors.district) setErrors({...errors, district: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                        errors.district ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
+                      placeholder="e.g. Raipur"
+                    />
+                  </div>
+                  {errors.district && <p className="text-red-400 text-xs ml-1 mt-1">{errors.district}</p>}
+                </div>
+              </div>
             </div>
 
             {/* Fee Notice */}
@@ -329,7 +395,7 @@ export default function Register() {
               <AlertCircle className="w-5 h-5 text-neon shrink-0 mt-0.5" />
               <div>
                 <p className="text-white/60 text-xs font-body leading-relaxed">
-                  By proceeding, you agree to the tournament regulations and the entry fee of <span className="text-white font-bold">Rs. {event.entryFee.toLocaleString()}</span>. Registration is final once payment is confirmed.
+                  By proceeding, you agree to the tournament regulations and the entry fee of <span className="text-white font-bold">Rs. 900 + Service Tax</span>. Registration is final once payment is confirmed.
                 </p>
               </div>
             </div>
