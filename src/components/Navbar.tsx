@@ -59,11 +59,8 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3" onClick={closeMenus}>
-            <div className="relative w-10 h-10 flex items-center justify-center">
-              <div className="absolute inset-0 bg-neon/20 rounded-lg blur-md group-hover:bg-neon/40 transition-all duration-500" />
-              <div className="relative w-8 h-8 bg-dark border border-white/10 rounded flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
-                <span className="font-display font-black text-neon text-xl">C</span>
-              </div>
+            <div className="relative w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-xl overflow-hidden border border-white/10 group-hover:border-neon/50 transition-colors duration-500">
+              <img src="/logo.jpeg" alt="Chess Community Logo" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
             </div>
             <div className="flex flex-col">
               <span className="font-display text-lg md:text-xl font-black text-white tracking-tighter leading-none">
