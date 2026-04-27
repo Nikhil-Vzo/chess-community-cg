@@ -70,7 +70,8 @@ export default function Payment() {
       
       // Razorpay receipt length must be <= 40 chars. 
       // Date.now() is 13 chars, id.substring(0,8) is 8 chars. Total ~28 chars.
-      const receiptId = `rcpt_${Date.now()}_${id.substring(0, 8)}`
+      const safeId = id || 'unknown'
+      const receiptId = `rcpt_${Date.now()}_${safeId.substring(0, 8)}`
       
       const order = await supabaseService.createRazorpayOrder(event.entryFee, receiptId)
       console.log("Server responded with order:", order)
