@@ -129,7 +129,6 @@ export default function SummerFiesta() {
     )
   }
 
-  const entryFee = dbEvent?.entryFee || 900
   const eventDate = dbEvent?.date
     ? new Date(dbEvent.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     : FIESTA_DATA.event.date
