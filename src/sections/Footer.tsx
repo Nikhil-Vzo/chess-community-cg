@@ -8,7 +8,7 @@ export function Footer() {
         {/* Giant Logo Text */}
         <div className="mb-16">
           <h2 className="font-display text-[7vw] md:text-[6vw] font-bold text-white/[0.03] uppercase leading-tight text-center select-none">
-            INDIAN CHESS COMMUNITY
+            CHESS COMMUNITY CHHATTISGARH
           </h2>
         </div>
 
@@ -16,18 +16,18 @@ export function Footer() {
           {/* Brand */}
           <div>
             <h3 className="font-display text-2xl font-bold text-white uppercase mb-4">
-              Indian Chess Community
+              Chess Community Chhattisgarh
             </h3>
             <p className="text-white/40 font-body text-sm leading-relaxed mb-6">
-              Elite chess training camps and tournaments. Forging the next generation of Grandmasters since 2015.
+              Elite chess training camps and tournaments. Forging the next generation of Grandmasters.
             </p>
             <div className="flex items-center gap-4 text-white/40">
               <Mail className="w-4 h-4" />
-              <span className="text-sm font-body">info@chesscommunitycg.com</span>
+              <span className="text-sm font-body">featamogh@gmail.com</span>
             </div>
             <div className="flex items-center gap-4 text-white/40 mt-2">
               <Phone className="w-4 h-4" />
-              <span className="text-sm font-body">+91 98765 43210</span>
+              <span className="text-sm font-body">+91 88715 49125</span>
             </div>
           </div>
 
@@ -89,7 +89,7 @@ export function Footer() {
             <div className="flex items-start gap-3 text-white/40">
               <MapPin className="w-4 h-4 mt-1 shrink-0" />
               <p className="text-sm font-body leading-relaxed">
-                Chess Community Chhattisgarh<br />
+                Indian Chess Community<br />
                 Raipur<br />
                 Chhattisgarh<br />
                 India
@@ -101,7 +101,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-xs font-body">
-            &copy; 2026 Indian Chess Community. All rights reserved.
+            &copy; 2026 Chess Community Chhattisgarh. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <span className="text-white/30 text-xs font-body hover:text-white/50 cursor-pointer transition-colors">
