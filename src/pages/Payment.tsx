@@ -30,20 +30,35 @@ export default function Payment() {
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
+      if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+        console.log("Razorpay script already loaded.")
+        resolve(true)
+        return
+      }
       const script = document.createElement('script')
       script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-      script.onload = () => resolve(true)
-      script.onerror = () => resolve(false)
+      script.onload = () => {
+        console.log("Razorpay script loaded successfully.")
+        resolve(true)
+      }
+      script.onerror = () => {
+        console.error("Failed to load Razorpay script.")
+        resolve(false)
+      }
       document.body.appendChild(script)
     })
   }
 
   const handlePayment = async () => {
+    console.log("handlePayment started")
     setProcessing(true)
     
     try {
       // 1. Load Razorpay script
+      console.log("Loading script...")
       const isLoaded = await loadRazorpayScript()
+      console.log("Script loaded:", isLoaded)
+      
       if (!isLoaded) {
         toast.error('Failed to load Razorpay SDK. Are you online?')
         setProcessing(false)
@@ -51,16 +66,24 @@ export default function Payment() {
       }
 
       // 2. Create Order on the server
-      const receiptId = `receipt_${id}_${Date.now()}`
+      console.log("Creating order on server with fee:", event.entryFee)
+      
+      // Razorpay receipt length must be <= 40 chars. 
+      // Date.now() is 13 chars, id.substring(0,8) is 8 chars. Total ~28 chars.
+      const receiptId = `rcpt_${Date.now()}_${id.substring(0, 8)}`
+      
       const order = await supabaseService.createRazorpayOrder(event.entryFee, receiptId)
+      console.log("Server responded with order:", order)
 
       if (order?._server_error) {
+        console.error("Backend Error:", order._server_error)
         toast.error(`Backend Error: ${order._server_error}`)
         setProcessing(false)
         return
       }
 
       if (!order || !order.id) {
+        console.error("No valid order ID returned")
         toast.error('Failed to create payment order.')
         setProcessing(false)
         return
