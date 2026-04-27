@@ -72,7 +72,7 @@ export default function Account() {
 
     const { error } = await supabase
       .from('profiles')
-      .upsert(payload)
+      .upsert(payload as any)
 
     if (error) {
       toast.error(error.message)
