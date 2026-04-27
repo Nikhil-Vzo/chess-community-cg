@@ -16,6 +16,7 @@ import Account from './pages/Account'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import SummerFiesta from './pages/SummerFiesta'
+import Store from './pages/Store'
 
 import { ReactLenis } from 'lenis/react'
 
@@ -72,6 +73,7 @@ function AppContent() {
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/summer-fiesta" element={<SummerFiesta />} />
+          <Route path="/store" element={<Store />} />
           <Route path="/videos/:id" element={<VaultPlayer />} />
           <Route path="/vault/:id" element={<VaultPlayer />} />
           <Route path="/register/:id" element={<Register />} />
