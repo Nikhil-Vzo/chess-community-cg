@@ -54,6 +54,12 @@ export default function Payment() {
       const receiptId = `receipt_${id}_${Date.now()}`
       const order = await supabaseService.createRazorpayOrder(event.entryFee, receiptId)
 
+      if (order?._server_error) {
+        toast.error(`Backend Error: ${order._server_error}`)
+        setProcessing(false)
+        return
+      }
+
       if (!order || !order.id) {
         toast.error('Failed to create payment order.')
         setProcessing(false)
