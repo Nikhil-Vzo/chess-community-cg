@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/sections/Footer'
-import { Instagram, Linkedin, Facebook, Mail, ExternalLink, Award, Users, TrendingUp } from 'lucide-react'
+import { Instagram, Linkedin, Facebook, Mail, Award, Users, TrendingUp } from 'lucide-react'
 
 export default function About() {
   const stats = [
