@@ -53,6 +53,8 @@ export default function Register() {
     age: '',
     fide_id: '',
   })
+  
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [useProfile, setUseProfile] = useState(false)
 
@@ -80,6 +82,7 @@ export default function Register() {
       age: profile.dob ? String(new Date().getFullYear() - new Date(profile.dob).getFullYear()) : '',
       fide_id: profile.fide_id || '',
     })
+    setErrors({})
     toast.success('Profile data applied!')
   }
 
@@ -105,20 +108,33 @@ export default function Register() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Validation
-    if (!formData.name || !formData.email || !formData.phone || !formData.age) {
-      toast.error('Please fill in all required fields.')
-      return
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.name) newErrors.name = 'Full name is required'
+    if (!formData.email) newErrors.email = 'Email is required'
+    
+    if (!formData.phone) {
+      newErrors.phone = 'Phone number is required'
+    } else {
+      const digitCount = formData.phone.replace(/[^0-9]/g, '').length
+      if (digitCount < 10) {
+        newErrors.phone = 'Must be at least 10 digits'
+      }
+    }
+    
+    if (!formData.age) {
+      newErrors.age = 'Age is required'
+    } else {
+      const ageNum = parseInt(formData.age, 10)
+      if (isNaN(ageNum) || ageNum < 4 || ageNum > 100) {
+        newErrors.age = 'Age must be between 4 and 100'
+      }
     }
 
-    const ageNum = parseInt(formData.age, 10)
-    if (isNaN(ageNum) || ageNum < 4 || ageNum > 100) {
-      toast.error('Please enter a valid age between 4 and 100.')
-      return
-    }
+    setErrors(newErrors)
 
-    if (!/^\d{10}$/.test(formData.phone.replace(/[^0-9]/g, '').slice(-10))) {
-      toast.error('Please enter a valid 10-digit phone number.')
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Please fix the highlighted errors before proceeding.')
       return
     }
 
@@ -202,32 +218,42 @@ export default function Register() {
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Full Name</label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                  <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.name ? 'text-red-400' : 'text-white/20'}`} />
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm focus:border-neon outline-none transition-all"
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value })
+                      if (errors.name) setErrors({...errors, name: ''})
+                    }}
+                    className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                      errors.name ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                    }`}
                     placeholder="Enter full name"
-                    required
                   />
                 </div>
+                {errors.name && <p className="text-red-400 text-xs ml-1 mt-1">{errors.name}</p>}
               </div>
 
               {/* Email */}
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.email ? 'text-red-400' : 'text-white/20'}`} />
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm focus:border-neon outline-none transition-all"
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value })
+                      if (errors.email) setErrors({...errors, email: ''})
+                    }}
+                    className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                      errors.email ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                    }`}
                     placeholder="your@email.com"
-                    required
                   />
                 </div>
+                {errors.email && <p className="text-red-400 text-xs ml-1 mt-1">{errors.email}</p>}
               </div>
 
               {/* Phone and Age Row */}
@@ -236,34 +262,44 @@ export default function Register() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Phone Number</label>
                   <div className="relative">
-                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <Hash className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.phone ? 'text-red-400' : 'text-white/20'}`} />
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm focus:border-neon outline-none transition-all"
+                      onChange={(e) => {
+                        setFormData({ ...formData, phone: e.target.value })
+                        if (errors.phone) setErrors({...errors, phone: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                        errors.phone ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
                       placeholder="98765 43210"
-                      required
                     />
                   </div>
+                  {errors.phone && <p className="text-red-400 text-xs ml-1 mt-1">{errors.phone}</p>}
                 </div>
 
                 {/* Age */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Player Age</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                    <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.age ? 'text-red-400' : 'text-white/20'}`} />
                     <input
                       type="number"
                       min="4"
                       max="100"
                       value={formData.age}
-                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm focus:border-neon outline-none transition-all"
+                      onChange={(e) => {
+                        setFormData({ ...formData, age: e.target.value })
+                        if (errors.age) setErrors({...errors, age: ''})
+                      }}
+                      className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-white font-body text-sm outline-none transition-all ${
+                        errors.age ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-neon'
+                      }`}
                       placeholder="Enter age (e.g., 12)"
-                      required
                     />
                   </div>
+                  {errors.age && <p className="text-red-400 text-xs ml-1 mt-1">{errors.age}</p>}
                 </div>
               </div>
 
