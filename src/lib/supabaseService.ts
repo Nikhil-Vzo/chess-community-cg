@@ -11,7 +11,7 @@ export const supabaseService = {
     if (error) throw error
     
     // Map database fields to frontend types if needed
-    return (data || []).map(event => ({
+    return ((data as any[]) || []).map(event => ({
       ...event,
       entryFee: Number(event.entry_fee)
     })) as ChessEvent[]
@@ -24,9 +24,10 @@ export const supabaseService = {
       .eq('id', id)
       .single()
     if (error) throw error
+    const row = data as any
     return {
-      ...data,
-      entryFee: Number(data.entry_fee)
+      ...row,
+      entryFee: Number(row.entry_fee)
     } as ChessEvent
   },
 
@@ -78,7 +79,7 @@ export const supabaseService = {
           guest_name: guestData.name,
           guest_phone: guestData.phone,
         }
-      ])
+      ] as any)
     
     if (error) throw error
     return true
