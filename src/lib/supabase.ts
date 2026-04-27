@@ -7,4 +7,17 @@ if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KE
   console.warn('Missing Supabase environment variables. Auth features will not work.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Singleton pattern: prevent HMR from creating multiple GoTrueClient instances
+const globalForSupabase = globalThis as unknown as {
+  __supabase?: ReturnType<typeof createClient>
+}
+
+export const supabase = globalForSupabase.__supabase ?? createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+})
+
+globalForSupabase.__supabase = supabase

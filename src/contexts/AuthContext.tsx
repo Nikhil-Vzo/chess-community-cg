@@ -70,18 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        mapSupabaseUser(session.user)
-        await fetchProfile(session.user.id)
-      } else {
-        setIsProfileLoaded(true)
-      }
-      setIsLoaded(true)
-    })
-
-    // Listen for changes on auth state (sign in, sign out, etc.)
+    // onAuthStateChange fires an INITIAL_SESSION event automatically,
+    // so we don't need a separate getSession() call.
+    // Running both causes a race condition that leads to Supabase lock contention.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         mapSupabaseUser(session.user)
