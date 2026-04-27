@@ -15,6 +15,7 @@ import {
   Trophy,
   Video,
   ShoppingBag,
+  Info,
 } from 'lucide-react'
 
 export function Navbar() {
@@ -32,10 +33,11 @@ export function Navbar() {
   }, [])
 
   const navLinks = [
-    { label: 'Camps', href: '/events?tab=camps', icon: Calendar },
-    { label: 'Tournaments', href: '/events?tab=tournaments', icon: Trophy },
+    { label: 'Camps', href: '/events?type=camp', icon: Calendar },
+    { label: 'Tournaments', href: '/events?type=tournament', icon: Trophy },
     { label: 'Videos', href: '/videos', icon: Video },
     { label: 'Store', href: '/store', icon: ShoppingBag },
+    { label: 'About', href: '/about', icon: Info },
   ]
 
   const isHome = location.pathname === '/'

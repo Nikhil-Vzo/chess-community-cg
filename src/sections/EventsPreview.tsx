@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { supabaseService } from '@/lib/supabaseService'
 import type { ChessEvent } from '@/types'
-import { Calendar, MapPin, ArrowRight, Loader2, Star } from 'lucide-react'
+import { Calendar, MapPin, ArrowRight, Loader2, Star, Download } from 'lucide-react'
 
 function EventCard({ event }: { event: ChessEvent }) {
   return (
@@ -62,9 +62,25 @@ function EventCard({ event }: { event: ChessEvent }) {
             {event.title}
           </h3>
 
+          {/* Download Brochure for Summer Fiesta */}
+          {(event.id === 'summer-fiesta' || event.title.includes('Summer Fiesta')) && (
+            <div className="mb-6">
+              <a 
+                href="/brochure.jpeg"
+                download="Summer_Fiesta_Brochure.jpeg"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-neon/30 bg-neon/10 text-neon font-body font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-neon hover:text-dark transition-all duration-300"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download className="w-3 h-3" />
+                Download Brochure
+              </a>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
-            <span className="text-white font-display font-black text-lg">
+            <span className="text-white font-display font-black text-lg flex items-baseline gap-1">
               ₹{event.entryFee?.toLocaleString() || '0'}
+              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">+ Service Tax</span>
             </span>
             <span className="flex items-center gap-1 text-[10px] font-bold text-white/30 group-hover:text-neon transition-colors uppercase tracking-widest">
               Details
@@ -202,9 +218,18 @@ export function EventsPreview() {
                       Summer Fiesta Grand Chess Open
                     </h3>
                     <p className="font-body text-white/50 max-w-xl mb-8">
-                      10th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
+                      9th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
                     </p>
                     <div className="flex items-center gap-4">
+                      <a 
+                        href="/brochure.jpeg"
+                        download="Summer_Fiesta_Brochure.jpeg"
+                        className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 hover:border-white text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download Brochure
+                      </a>
                       <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl">
                         View Details
                         <ArrowRight className="w-4 h-4" />

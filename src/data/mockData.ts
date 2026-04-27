@@ -159,7 +159,7 @@ export const events: ChessEvent[] = [
     id: 'summer-fiesta',
     title: 'Summer Fiesta Grand Chess Open',
     description: 'Ambuja Mall & Team Chess City Raipur presents Summer Fiesta Grand Chess Open. Total Cash Prize ₹1,00,000+!',
-    date: '2026-05-10',
+    date: '2026-05-09',
     location: 'Ambuja City Centre Mall, Raipur',
     type: 'tournament',
     category: 'upcoming',
