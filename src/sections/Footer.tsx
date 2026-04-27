@@ -6,8 +6,8 @@ export function Footer() {
     <footer className="bg-dark pt-24 pb-8 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         {/* Giant Logo Text */}
-        <div className="overflow-hidden mb-16">
-          <h2 className="font-display text-[7vw] md:text-[6vw] font-bold text-white/[0.03] uppercase leading-none text-center whitespace-nowrap select-none">
+        <div className="mb-16">
+          <h2 className="font-display text-[7vw] md:text-[6vw] font-bold text-white/[0.03] uppercase leading-tight text-center select-none">
             CHESS COMMUNITY CHHATTISGARH
           </h2>
         </div>
@@ -42,6 +42,7 @@ export function Footer() {
                 { label: 'Events', href: '/events' },
                 { label: 'Videos', href: '/videos' },
                 { label: 'Store', href: '/store' },
+                { label: 'About Us', href: '/about' },
                 { label: 'Dashboard', href: '/dashboard' },
               ].map((link) => (
                 <li key={link.label}>
@@ -64,8 +65,8 @@ export function Footer() {
             <ul className="space-y-3">
               {[
                 { label: 'Summer Fiesta (Live)', href: '/summer-fiesta' },
-                { label: 'Upcoming Tournaments', href: '/events?tab=tournaments' },
-                { label: 'Summer Camps', href: '/events?tab=camps' },
+                { label: 'Upcoming Tournaments', href: '/events?type=tournament' },
+                { label: 'Summer Camps', href: '/events?type=camp' },
                 { label: 'Past Events', href: '/events?tab=past' },
               ].map((link) => (
                 <li key={link.label}>

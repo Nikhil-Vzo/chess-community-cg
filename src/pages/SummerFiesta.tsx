@@ -5,7 +5,7 @@ import { supabaseService } from '@/lib/supabaseService'
 import type { ChessEvent } from '@/types'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/sections/Footer'
-import { Calendar, MapPin, Clock, Trophy, ArrowRight, Shield, Star, Users, Phone, Loader2, IndianRupee } from 'lucide-react'
+import { Calendar, MapPin, Clock, Trophy, ArrowRight, Shield, Star, Users, Phone, Loader2, IndianRupee, Download } from 'lucide-react'
 
 const FIESTA_DATA = {
   event: {
@@ -15,7 +15,7 @@ const FIESTA_DATA = {
     association: "Hangout The Food Court",
     venue_partner: "Ambuja Mall, Raipur",
     venue: "Ambuja City Centre Mall, Raipur",
-    date: "10 May 2026",
+    date: "09 May 2026",
     time: {
       start: "09:00 AM",
       end: "06:00 PM",
@@ -234,6 +234,14 @@ export default function SummerFiesta() {
                 >
                   Join WhatsApp Group
                 </a>
+                <a
+                  href="/brochure.jpeg"
+                  download="Summer_Fiesta_Brochure.jpeg"
+                  className="px-8 py-4 border border-white/20 hover:border-white text-white font-body font-bold text-sm uppercase tracking-widest rounded-xl backdrop-blur-md transition-all duration-300 flex items-center gap-3"
+                >
+                  <Download className="w-5 h-5" />
+                  Download Brochure
+                </a>
               </div>
             </motion.div>
 
@@ -246,7 +254,7 @@ export default function SummerFiesta() {
             >
               <div className="absolute inset-0 bg-neon/20 blur-3xl rounded-[40px] -z-10 animate-pulse-glow" />
               <img
-                src="https://img.freepik.com/free-photo/digital-art-style-abstract-chess-pieces_23-2151476080.jpg?semt=ais_hybrid&w=740&q=80"
+                src="/brochure.jpeg"
                 alt="Brochure"
                 className="w-full h-auto rounded-[32px] border-2 border-white/10 shadow-2xl shadow-neon/10 object-cover"
               />

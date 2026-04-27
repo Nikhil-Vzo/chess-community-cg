@@ -18,6 +18,7 @@ import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import SummerFiesta from './pages/SummerFiesta'
 import Store from './pages/Store'
+import About from './pages/About'
 
 function AppContent() {
   const { user, profile, isLoaded, isProfileLoaded } = useAuth()
@@ -65,6 +66,7 @@ function AppContent() {
           <Route path="/receipt/:id" element={<Receipt />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </div>
     </>

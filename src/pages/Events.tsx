@@ -5,7 +5,7 @@ import { supabaseService } from '@/lib/supabaseService'
 import type { ChessEvent } from '@/types'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/sections/Footer'
-import { Calendar, MapPin, ArrowRight, Filter, Loader2, Info, Star } from 'lucide-react'
+import { Calendar, MapPin, ArrowRight, Filter, Loader2, Info, Star, Download } from 'lucide-react'
 
 type TabType = 'upcoming' | 'ongoing' | 'past' | 'all'
 
@@ -90,13 +90,13 @@ export default function Events() {
 
           {/* Tabs */}
           <div className="flex flex-wrap items-center gap-2 mb-12">
-            <Filter className="w-4 h-4 text-white/20 mr-4" />
-            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
+            <Filter className="w-4 h-4 text-white/20 mr-4 shrink-0" />
+            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 max-w-full overflow-x-auto scrollbar-hide">
               {tabs.map((tab) => (
                 <button
                   key={tab.value}
                   onClick={() => setActiveTab(tab.value)}
-                  className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-500 ${
+                  className={`px-4 md:px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all duration-500 whitespace-nowrap ${
                     activeTab === tab.value
                       ? 'bg-neon text-dark shadow-neon'
                       : 'text-white/40 hover:text-white'
@@ -134,9 +134,18 @@ export default function Events() {
                       Summer Fiesta Grand Chess Open
                     </h2>
                     <p className="font-body text-white/50 max-w-xl mb-8">
-                      10th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
+                      9th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
                     </p>
                     <div className="flex items-center gap-4">
+                      <a 
+                        href="/brochure.jpeg"
+                        download="Summer_Fiesta_Brochure.jpeg"
+                        className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 hover:border-white text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download Brochure
+                      </a>
                       <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl">
                         View Details
                         <ArrowRight className="w-4 h-4" />
@@ -216,11 +225,27 @@ export default function Events() {
                         {event.description}
                       </p>
 
+                      {/* Download Brochure for Summer Fiesta */}
+                      {(event.id === 'summer-fiesta' || event.title.includes('Summer Fiesta')) && (
+                        <div className="mb-8">
+                          <a 
+                            href="/brochure.jpeg"
+                            download="Summer_Fiesta_Brochure.jpeg"
+                            className="inline-flex items-center gap-2 px-4 py-2 border border-neon/30 bg-neon/10 text-neon font-body font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-neon hover:text-dark transition-all duration-300"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Download className="w-3 h-3" />
+                            Download Brochure
+                          </a>
+                        </div>
+                      )}
+
                       <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                         <div>
                           <p className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-1">Entry Fee</p>
-                          <span className="text-white font-display font-black text-xl">
+                          <span className="text-white font-display font-black text-xl flex items-baseline gap-1">
                             ₹{event.entryFee.toLocaleString()}
+                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">+ Service Tax</span>
                           </span>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-neon group-hover:text-dark transition-all duration-500">
@@ -239,8 +264,17 @@ export default function Events() {
               <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
                 <Info className="w-8 h-8 text-white/20" />
               </div>
-              <h3 className="font-display text-xl font-bold text-white uppercase mb-2">No matches found</h3>
-              <p className="text-white/30 font-body text-sm">We couldn't find any {typeParam || 'events'} in the {activeTab} category.</p>
+              {typeParam === 'camp' ? (
+                <>
+                  <h3 className="font-display text-3xl font-black text-white uppercase mb-2">Camps Coming Soon</h3>
+                  <p className="text-white/40 font-body text-sm">We are preparing some exciting training programs. Stay tuned!</p>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-display text-xl font-bold text-white uppercase mb-2">No matches found</h3>
+                  <p className="text-white/30 font-body text-sm">We couldn't find any {typeParam || 'events'} in the {activeTab} category.</p>
+                </>
+              )}
             </div>
           )}
         </div>
