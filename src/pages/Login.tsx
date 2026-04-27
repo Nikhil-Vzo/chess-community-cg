@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
 import { Mail, Lock, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
+import { Navbar } from '@/components/Navbar'
+import { supabase } from '@/lib/supabase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -15,7 +16,7 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     if (method === 'password') {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -32,7 +33,7 @@ export default function Login() {
         email,
         options: {
           emailRedirectTo: window.location.origin,
-        }
+        },
       })
       if (error) {
         toast.error(error.message)
@@ -40,6 +41,7 @@ export default function Login() {
         toast.success('Check your email for the login link!')
       }
     }
+
     setLoading(false)
   }
 
@@ -48,9 +50,11 @@ export default function Login() {
       toast.error('Please enter your email address first.')
       return
     }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/account`,
     })
+
     if (error) {
       toast.error(error.message)
     } else {
@@ -59,40 +63,39 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-dark flex flex-col items-center justify-center px-6 pt-32 pb-12 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-neon/5 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-neon/5 to-transparent pointer-events-none" />
-      
-      <motion.div 
-        className="w-full max-w-md z-10"
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-dark px-6 pb-12 pt-32">
+      <Navbar />
+      <div className="pointer-events-none absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-neon/5 to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-full w-1/3 bg-gradient-to-r from-neon/5 to-transparent" />
+
+      <motion.div
+        className="z-10 w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="text-center mb-10">
-          <Link to="/" className="inline-block mb-8">
-            <span className="font-display text-2xl font-bold text-white tracking-[0.2em] uppercase">
+        <div className="mb-10 text-center">
+          <Link to="/" className="mb-8 inline-block">
+            <span className="font-display text-2xl font-bold uppercase tracking-[0.2em] text-white">
               CHESS COMMUNITY CG
             </span>
           </Link>
-          <h1 className="font-display text-4xl font-bold text-white uppercase mb-2">Welcome Back</h1>
-          <p className="text-white/40 font-body">
+          <h1 className="mb-2 font-display text-4xl font-bold uppercase text-white">Welcome Back</h1>
+          <p className="font-body text-white/40">
             {method === 'magic' ? 'Login via a secure link sent to your mail.' : 'Sign in to continue your grandmaster journey.'}
           </p>
         </div>
 
-        <div className="glass p-8 rounded-[20px] border border-white/10 shadow-2xl">
-          {/* Method Toggle */}
-          <div className="flex bg-white/5 p-1 rounded-xl mb-8">
-            <button 
+        <div className="glass rounded-[20px] border border-white/10 p-8 shadow-2xl">
+          <div className="mb-8 flex rounded-xl bg-white/5 p-1">
+            <button
               onClick={() => setMethod('magic')}
-              className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${method === 'magic' ? 'bg-neon text-dark shadow-neon' : 'text-white/40'}`}
+              className={`flex-1 rounded-lg py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${method === 'magic' ? 'bg-neon text-dark shadow-neon' : 'text-white/40'}`}
             >
               Magic Link
             </button>
-            <button 
+            <button
               onClick={() => setMethod('password')}
-              className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${method === 'password' ? 'bg-neon text-dark shadow-neon' : 'text-white/40'}`}
+              className={`flex-1 rounded-lg py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${method === 'password' ? 'bg-neon text-dark shadow-neon' : 'text-white/40'}`}
             >
               Password
             </button>
@@ -100,60 +103,59 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-body font-bold text-white/60 uppercase tracking-widest">Email Address</label>
+              <label className="text-xs font-body font-bold uppercase tracking-widest text-white/60">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white font-body focus:border-neon/50 outline-none transition-all"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 font-body text-white outline-none transition-all focus:border-neon/50"
                   placeholder="name@example.com"
                   required
                 />
               </div>
             </div>
 
-            {method === 'password' && (
+            {method === 'password' ? (
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-body font-bold text-white/60 uppercase tracking-widest">Password</label>
-                  <button 
-                    type="button" 
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-body font-bold uppercase tracking-widest text-white/60">Password</label>
+                  <button
+                    type="button"
                     onClick={handleResetPassword}
-                    className="text-[10px] text-neon uppercase tracking-wider hover:underline"
+                    className="text-[10px] uppercase tracking-wider text-neon hover:underline"
                   >
                     Forgot?
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white font-body focus:border-neon/50 outline-none transition-all"
-                    placeholder="••••••••"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 font-body text-white outline-none transition-all focus:border-neon/50"
+                    placeholder="Enter your password"
                     required
                   />
                 </div>
               </div>
-            )}
+            ) : null}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-neon text-dark font-body font-bold uppercase tracking-widest rounded-xl hover:shadow-neon-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-neon py-4 font-body font-bold uppercase tracking-widest text-dark transition-all hover:shadow-neon-lg active:scale-[0.98]"
             >
               {loading ? 'Sending...' : method === 'magic' ? 'Send Link' : 'Sign In'}
-              {!loading && <ArrowRight className="w-4 h-4" />}
+              {!loading ? <ArrowRight className="h-4 w-4" /> : null}
             </button>
           </form>
         </div>
 
-        <p className="mt-8 text-center text-white/40 font-body text-sm">
-          Don't have an account? {' '}
-          <Link to="/signup" className="text-neon hover:underline font-bold">Register Now</Link>
+        <p className="mt-8 text-center font-body text-sm text-white/40">
+          Don't have an account? <Link to="/signup" className="font-bold text-neon hover:underline">Register Now</Link>
         </p>
       </motion.div>
     </div>

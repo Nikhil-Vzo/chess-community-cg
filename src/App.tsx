@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { ReactLenis } from 'lenis/react'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { Preloader } from '@/components/Preloader'
-import { Navbar } from '@/components/Navbar'
 import Home from './pages/Home'
 import Events from './pages/Events'
 import EventDetails from './pages/EventDetails'
@@ -18,33 +19,21 @@ import SignUp from './pages/SignUp'
 import SummerFiesta from './pages/SummerFiesta'
 import Store from './pages/Store'
 
-import { ReactLenis } from 'lenis/react'
-
 function AppContent() {
-  const [loading, setLoading] = useState(true)
-  const [showContent, setShowContent] = useState(false)
   const { user, profile, isLoaded, isProfileLoaded } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [showPreloader, setShowPreloader] = useState(true)
+  const isBooting = !isLoaded || (!!user && !isProfileLoaded)
 
   useEffect(() => {
-    // Show content after a short delay
-    const contentTimer = setTimeout(() => {
-      setShowContent(true)
-    }, 100)
+    const timer = window.setTimeout(() => {
+      setShowPreloader(false)
+    }, isBooting ? 1100 : 180)
 
-    // Force clear loading state after 3 seconds as a safety measure
-    const forceLoadTimer = setTimeout(() => {
-      setLoading(false)
-    }, 3000)
+    return () => window.clearTimeout(timer)
+  }, [isBooting])
 
-    return () => {
-      clearTimeout(contentTimer)
-      clearTimeout(forceLoadTimer)
-    }
-  }, [])
-
-  // Onboarding Redirection Logic — only fires once profile fetch is complete
   useEffect(() => {
     if (isLoaded && isProfileLoaded && user && !profile) {
       if (location.pathname !== '/account' && location.pathname !== '/login' && location.pathname !== '/signup') {
@@ -53,18 +42,13 @@ function AppContent() {
     }
   }, [isLoaded, isProfileLoaded, user, profile, location.pathname, navigate])
 
-  const handlePreloaderComplete = () => {
-    setLoading(false)
-  }
-
   return (
     <>
-      {showContent && loading && <Preloader onComplete={handlePreloaderComplete} />}
-      <div 
-        className="min-h-screen bg-dark transition-opacity duration-700"
-        style={{ opacity: loading ? 0 : 1 }}
+      <AnimatePresence>{showPreloader ? <Preloader /> : null}</AnimatePresence>
+      <div
+        className="min-h-screen bg-dark transition-opacity duration-300"
+        style={{ opacity: showPreloader ? 0 : 1 }}
       >
-        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -96,4 +80,3 @@ export default function App() {
     </ReactLenis>
   )
 }
-

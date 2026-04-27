@@ -31,11 +31,6 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
-    setMobileOpen(false)
-    setDropdownOpen(false)
-  }, [location])
-
   const navLinks = [
     { label: 'Camps', href: '/events?tab=camps', icon: Calendar },
     { label: 'Tournaments', href: '/events?tab=tournaments', icon: Trophy },
@@ -44,6 +39,10 @@ export function Navbar() {
   ]
 
   const isHome = location.pathname === '/'
+  const closeMenus = () => {
+    setMobileOpen(false)
+    setDropdownOpen(false)
+  }
 
   return (
     <>
@@ -59,7 +58,7 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="group flex items-center gap-3">
+          <Link to="/" className="group flex items-center gap-3" onClick={closeMenus}>
             <div className="relative w-10 h-10 flex items-center justify-center">
               <div className="absolute inset-0 bg-neon/20 rounded-lg blur-md group-hover:bg-neon/40 transition-all duration-500" />
               <div className="relative w-8 h-8 bg-dark border border-white/10 rounded flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
@@ -83,6 +82,7 @@ export function Navbar() {
                 key={link.label}
                 to={link.href}
                 className="relative px-5 py-2 text-[11px] font-body font-bold text-white/50 hover:text-white transition-colors uppercase tracking-widest z-10 flex items-center gap-2"
+                onClick={closeMenus}
                 onMouseEnter={() => setHoveredLink(link.label)}
                 onMouseLeave={() => setHoveredLink(null)}
               >
@@ -141,6 +141,7 @@ export function Navbar() {
                         <div className="p-2">
                           <Link
                             to="/dashboard"
+                            onClick={closeMenus}
                             className="flex items-center gap-3 px-4 py-3 text-xs text-white/60 hover:text-neon hover:bg-white/5 rounded-xl transition-all group"
                           >
                             <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -148,6 +149,7 @@ export function Navbar() {
                           </Link>
                           <Link
                             to="/dashboard?tab=registrations"
+                            onClick={closeMenus}
                             className="flex items-center gap-3 px-4 py-3 text-xs text-white/60 hover:text-neon hover:bg-white/5 rounded-xl transition-all group"
                           >
                             <ClipboardList className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -155,6 +157,7 @@ export function Navbar() {
                           </Link>
                           <Link
                             to="/account"
+                            onClick={closeMenus}
                             className="flex items-center gap-3 px-4 py-3 text-xs text-white/60 hover:text-neon hover:bg-white/5 rounded-xl transition-all group"
                           >
                             <Settings className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -162,7 +165,10 @@ export function Navbar() {
                           </Link>
                           <div className="h-px bg-white/5 my-2 mx-4" />
                           <button
-                            onClick={logout}
+                            onClick={() => {
+                              closeMenus()
+                              void logout()
+                            }}
                             className="flex items-center gap-3 px-4 py-3 text-xs text-red-400/70 hover:text-red-400 hover:bg-red-400/5 rounded-xl transition-all group w-full"
                           >
                             <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -178,12 +184,14 @@ export function Navbar() {
               <div className="flex items-center gap-6">
                 <Link
                   to="/login"
+                  onClick={closeMenus}
                   className="text-[11px] font-body font-bold text-white/50 hover:text-white transition-colors uppercase tracking-[0.2em]"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/signup"
+                  onClick={closeMenus}
                   className="px-8 py-3 bg-neon text-dark font-body font-black text-[11px] uppercase tracking-widest rounded-full hover:shadow-neon-lg hover:scale-105 transition-all active:scale-95"
                 >
                   Join Now
@@ -218,6 +226,7 @@ export function Navbar() {
                 <Link
                   key={link.label}
                   to={link.href}
+                  onClick={closeMenus}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 text-2xl font-display font-black text-white hover:bg-neon hover:text-dark transition-all group"
                 >
                   <link.icon className="w-6 h-6 text-neon group-hover:text-dark" />
@@ -230,27 +239,32 @@ export function Navbar() {
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] ml-2">Account</p>
               {isSignedIn ? (
                 <div className="grid grid-cols-1 gap-3">
-                  <Link to="/dashboard" className="p-4 rounded-2xl bg-white/5 border border-white/5 text-white font-bold flex items-center gap-3">
+                  <Link to="/dashboard" onClick={closeMenus} className="p-4 rounded-2xl bg-white/5 border border-white/5 text-white font-bold flex items-center gap-3">
                     <LayoutDashboard className="w-5 h-5 text-neon" />
                     Dashboard
                   </Link>
-                  <button onClick={logout} className="p-4 rounded-2xl bg-red-400/10 border border-red-400/20 text-red-400 font-bold flex items-center gap-3">
+                  <button onClick={() => {
+                    closeMenus()
+                    void logout()
+                  }} className="p-4 rounded-2xl bg-red-400/10 border border-red-400/20 text-red-400 font-bold flex items-center gap-3">
                     <LogOut className="w-5 h-5" />
                     Sign Out
                   </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 text-white font-bold text-sm uppercase tracking-widest"
-                  >
+                    <Link
+                      to="/login"
+                      onClick={closeMenus}
+                      className="flex items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 text-white font-bold text-sm uppercase tracking-widest"
+                    >
                     Login
                   </Link>
-                  <Link
-                    to="/signup"
-                    className="flex items-center justify-center p-4 rounded-2xl bg-neon text-dark font-black text-sm uppercase tracking-widest shadow-neon"
-                  >
+                    <Link
+                      to="/signup"
+                      onClick={closeMenus}
+                      className="flex items-center justify-center p-4 rounded-2xl bg-neon text-dark font-black text-sm uppercase tracking-widest shadow-neon"
+                    >
                     Join
                   </Link>
                 </div>
