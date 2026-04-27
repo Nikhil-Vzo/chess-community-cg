@@ -83,5 +83,22 @@ export const supabaseService = {
     
     if (error) throw error
     return true
+  },
+
+  // RAZORPAY
+  async createRazorpayOrder(amount: number, receipt: string) {
+    const { data, error } = await supabase.functions.invoke('razorpay', {
+      body: { action: 'create-order', amount, receipt }
+    })
+    if (error) throw error
+    return data
+  },
+
+  async verifyRazorpayPayment(paymentData: any) {
+    const { data, error } = await supabase.functions.invoke('razorpay', {
+      body: { action: 'verify-payment', ...paymentData }
+    })
+    if (error) throw error
+    return data
   }
 }

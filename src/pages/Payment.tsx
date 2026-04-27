@@ -28,45 +28,111 @@ export default function Payment() {
     )
   }
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
+
   const handlePayment = async () => {
     setProcessing(true)
     
-    // Simulate Razorpay payment gateway delay
-    setTimeout(async () => {
-      const paymentId = `pay_${Math.random().toString(36).substring(2, 15)}`
-      
-      try {
-        // Attempt to save to database for BOTH logged in and guest users
-        await supabaseService.createRegistration(
-          user?.id, 
-          event.id, 
-          paymentId,
-          { email: formData.email, name: formData.name, phone: formData.phone, age: formData.age }
-        )
-        
-        navigate(`/receipt/${id}`, {
-          state: {
-            formData,
-            event,
-            paymentId,
-            status: 'completed',
-          },
-        })
-      } catch (err: unknown) {
-        console.error('Registration failed:', err)
-        // Check if it's a foreign key error meaning the event doesn't exist in the DB
-        const errorCode = err && typeof err === 'object' && 'code' in err ? err.code : null
-        
-        if (errorCode === '23503') {
-          toast.error(`Database Error: The event "${event.title}" is a mock event and doesn't exist in the live database yet.`)
-        } else if (errorCode === '23505') {
-          toast.error('You have already registered for this event!')
-        } else {
-          toast.error('Failed to save registration to database.')
-        }
+    try {
+      // 1. Load Razorpay script
+      const isLoaded = await loadRazorpayScript()
+      if (!isLoaded) {
+        toast.error('Failed to load Razorpay SDK. Are you online?')
         setProcessing(false)
+        return
       }
-    }, 2000)
+
+      // 2. Create Order on the server
+      const receiptId = `receipt_${id}_${Date.now()}`
+      const order = await supabaseService.createRazorpayOrder(event.entryFee, receiptId)
+
+      if (!order || !order.id) {
+        toast.error('Failed to create payment order.')
+        setProcessing(false)
+        return
+      }
+
+      // 3. Initialize Razorpay options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Chess Camp Platform',
+        description: `Registration for ${event.title}`,
+        order_id: order.id,
+        handler: async function (response: any) {
+          // 4. Verify Payment on the server
+          try {
+            const verification = await supabaseService.verifyRazorpayPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+
+            if (verification && verification.verified) {
+              // 5. Save registration to DB
+              await supabaseService.createRegistration(
+                user?.id, 
+                event.id, 
+                response.razorpay_payment_id,
+                { email: formData.email, name: formData.name, phone: formData.phone, age: formData.age }
+              )
+              
+              navigate(`/receipt/${id}`, {
+                state: {
+                  formData,
+                  event,
+                  paymentId: response.razorpay_payment_id,
+                  status: 'completed',
+                },
+              })
+            } else {
+              toast.error('Payment verification failed.')
+              setProcessing(false)
+            }
+          } catch (err: any) {
+            console.error('Registration/Verification failed:', err)
+            const errorCode = err && typeof err === 'object' && 'code' in err ? err.code : null
+            if (errorCode === '23503') {
+              toast.error(`Database Error: The event "${event.title}" is a mock event and doesn't exist in the live database yet.`)
+            } else if (errorCode === '23505') {
+              toast.error('You have already registered for this event!')
+            } else {
+              toast.error('Failed to process registration after payment.')
+            }
+            setProcessing(false)
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: '#d4ff33', // Our neon color
+        },
+      }
+
+      const paymentObject = new (window as any).Razorpay(options)
+      paymentObject.on('payment.failed', function (response: any) {
+        toast.error(`Payment failed: ${response.error.description}`)
+        setProcessing(false)
+      })
+      paymentObject.open()
+
+    } catch (err: unknown) {
+      console.error('Payment initialization failed:', err)
+      toast.error('Something went wrong initializing the payment.')
+      setProcessing(false)
+    }
   }
 
   return (
