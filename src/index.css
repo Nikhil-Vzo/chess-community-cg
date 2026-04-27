@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Oswald:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 20 14% 14%;
+    --foreground: 0 0% 100%;
+    --card: 20 14% 11%;
+    --card-foreground: 0 0% 100%;
+    --popover: 20 14% 11%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 78 100% 59%;
+    --primary-foreground: 20 14% 14%;
+    --secondary: 20 14% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 20 14% 20%;
+    --muted-foreground: 30 6% 85%;
+    --accent: 78 100% 59%;
+    --accent-foreground: 20 14% 14%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 100% / 0.12;
+    --input: 20 14% 20%;
+    --ring: 78 100% 59%;
+    --radius: 0.25rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Oswald', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Oswald', sans-serif;
+  }
+  .font-body {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Neon glow */
+.neon-glow {
+  box-shadow: 0 0 20px rgba(200, 255, 46, 0.3), 0 0 40px rgba(200, 255, 46, 0.1);
+}
+
+.neon-text-glow {
+  text-shadow: 0 0 10px rgba(200, 255, 46, 0.5), 0 0 20px rgba(200, 255, 46, 0.3);
+}
+
+/* Preloader animation */
+@keyframes knight-trace {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #27221e;
+}
+::-webkit-scrollbar-thumb {
+  background: #c8ff2e;
+  border-radius: 3px;
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(30, 26, 23, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Light section */
+.section-light {
+  background-color: #f4f1ee;
+  color: #1c1917;
+}
+
+/* Count up glow */
+.achievement-glow {
+  background: linear-gradient(135deg, rgba(200, 255, 46, 0.1) 0%, rgba(200, 255, 46, 0.02) 100%);
+  border: 1px solid rgba(200, 255, 46, 0.2);
+}
+
+/* Perspective grid */
+.perspective-grid {
+  perspective: 1000px;
+}
+
+.perspective-grid-inner {
+  transform-style: preserve-3d;
+}
