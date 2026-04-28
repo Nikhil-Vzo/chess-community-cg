@@ -1,5 +1,0 @@
-{
-  "action": "create-order",
-  "amount": 1000,
-  "receipt": "test"
-}
