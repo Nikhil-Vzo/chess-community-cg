@@ -76,13 +76,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // onAuthStateChange fires an INITIAL_SESSION event automatically,
-    // so we don't need a separate getSession() call.
-    // Running both causes a race condition that leads to Supabase lock contention.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // onAuthStateChange fires for INITIAL_SESSION, SIGNED_IN, SIGNED_OUT,
+    // TOKEN_REFRESHED, etc. We only need to fetch the profile on the first
+    // two — TOKEN_REFRESHED fires every ~60s and re-fetching the profile
+    // each time is wasteful and causes stale-connection timeouts on idle tabs.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        // Token refreshed silently — user/profile haven't changed, skip DB call
+        return
+      }
+
       if (session?.user) {
         mapSupabaseUser(session.user)
-        await fetchProfile(session.user.id)
+        // Only fetch profile on initial load or fresh sign-in
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          await fetchProfile(session.user.id)
+        }
       } else {
         setUser(null)
         setProfile(null)
