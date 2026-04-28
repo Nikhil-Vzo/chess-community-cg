@@ -180,6 +180,65 @@ export default function About() {
               </motion.div>
             </div>
           </div>
+          {/* Founder - Mr. Vinesh Doultani Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mt-32 mb-16">
+            <div className="lg:col-span-5 order-2 lg:order-1">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-neon/20 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-40 transition-opacity" />
+                <div className="relative rounded-[40px] overflow-hidden border border-white/10 transform transition-transform group-hover:scale-[1.02] duration-700">
+                  <img src="/abt-2.jpeg" alt="Mr. Vinesh Doultani" className="w-full h-auto" />
+                </div>
+                
+                <div className="mt-8 glass p-6 rounded-2xl border border-white/10 backdrop-blur-xl">
+                  <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1">Founder, Chess City Raipur</p>
+                  <p className="text-white font-display text-xl font-black uppercase">Mr. Vinesh Doultani</p>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="lg:col-span-7 order-1 lg:order-2 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-px w-8 bg-neon" />
+                  <p className="text-neon text-[10px] font-bold uppercase tracking-[0.4em]">Visionary Leadership</p>
+                </div>
+                <h2 className="font-display text-4xl md:text-5xl font-black text-white uppercase mb-8 leading-tight">
+                  Mr. Vinesh <span className="text-neon">Doultani</span>
+                </h2>
+                
+                <p className="text-xl text-white/80 font-body leading-relaxed mb-6 italic border-l-4 border-neon pl-6">
+                  “Chess is not just a game; it is a platform to build confidence, character, and a sharper mind.”
+                </p>
+
+                <div className="space-y-6 text-white/60 font-body text-lg leading-relaxed">
+                  <p>
+                    Mr. Vinesh Doultani is one of the visionary founders of Chess City Raipur, dedicated to transforming the landscape of chess culture in Chhattisgarh and beyond. His journey in the world of chess promotion began in 2019, with a simple mission: to introduce chess to every corner of society and empower young minds through this intellectual sport.
+                  </p>
+                  <p>
+                    Over the years, he has collaborated with numerous schools, universities, organizations, government bodies, and private institutions, successfully establishing chess as a powerful tool for learning, discipline, and strategic thinking.
+                  </p>
+                  <p>
+                    Under his leadership, more than 2000+ students have been trained in chess through offline workshops, online sessions, camps, community classes, and structured programs. His efforts have not only created awareness but have helped build a strong and united chess ecosystem across the state.
+                  </p>
+                  <p>
+                    He is also the driving force behind the formation of the Chhattisgarh Chess Community, a growing network of players, parents, trainers, and enthusiasts working together to uplift the sport at the grassroots level.
+                  </p>
+                  <p>
+                    With the launch of Chess Times Foundation, Mr. Doultani aims to connect India, and eventually the world, through the universal language of chess. His vision is to create opportunities for every child, every student, and every aspiring player to learn, compete, and rise to greater heights.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </main>
 
