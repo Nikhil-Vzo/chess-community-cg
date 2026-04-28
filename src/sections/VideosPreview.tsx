@@ -32,7 +32,7 @@ export function VideosPreview() {
   }
 
   return (
-    <section className="bg-dark py-32 md:py-40 px-6">
+    <section className="bg-dark py-24 md:py-32 px-6">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="flex items-center gap-3 mb-4 justify-center"
