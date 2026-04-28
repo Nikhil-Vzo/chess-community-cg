@@ -129,7 +129,7 @@ export function EventsPreview() {
   }
 
   return (
-    <section className="bg-dark py-32 md:py-40 px-6">
+    <section className="bg-dark py-24 md:py-32 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Upcoming Live Programs Section */}
         {camps.length > 0 && (

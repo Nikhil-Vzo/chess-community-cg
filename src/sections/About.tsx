@@ -3,7 +3,7 @@ import { Target, Eye, Award } from 'lucide-react'
 
 export function About() {
   return (
-    <section className="py-32 md:py-40 px-6" style={{ backgroundColor: '#f4f1ee' }}>
+    <section className="py-24 md:py-32 px-6" style={{ backgroundColor: '#f4f1ee' }}>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text */}
