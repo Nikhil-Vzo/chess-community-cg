@@ -178,10 +178,10 @@ export function PgnViewer({ pgn }: PgnViewerProps) {
         </div>
       </div>
 
-      <div className="grid flex-1 gap-5 p-5 xl:grid-cols-[minmax(0,1fr)_minmax(300px,340px)]">
+      <div className="flex flex-1 flex-col gap-6 p-5">
         <div className="space-y-5">
           <div className="rounded-[30px] border border-white/10 bg-[#15110f] p-4 shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
-            <div className="mx-auto max-w-[460px]">
+            <div className="mx-auto max-w-[460px] w-full">
               <Chessboard
                 options={{
                   position: currentFen,
@@ -199,61 +199,61 @@ export function PgnViewer({ pgn }: PgnViewerProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-4 gap-2">
             <button
               type="button"
               onClick={() => setCurrentMoveIndex(0)}
               disabled={currentMoveIndex === 0}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-xs font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
             >
               <SkipBack className="h-4 w-4" />
-              Start
+              <span className="hidden sm:inline">Start</span>
             </button>
             <button
               type="button"
               onClick={() => setCurrentMoveIndex((previous) => Math.max(0, previous - 1))}
               disabled={currentMoveIndex === 0}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-xs font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
             >
               <ChevronLeft className="h-4 w-4" />
-              Back
+              <span className="hidden sm:inline">Back</span>
             </button>
             <button
               type="button"
               onClick={() => setCurrentMoveIndex((previous) => Math.min(totalMoves, previous + 1))}
               disabled={currentMoveIndex === totalMoves}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-neon px-4 py-3 text-sm font-body font-bold text-dark transition-all hover:shadow-neon disabled:cursor-not-allowed disabled:opacity-35"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-neon px-2 py-2.5 text-xs font-body font-bold text-dark transition-all hover:shadow-neon disabled:cursor-not-allowed disabled:opacity-35"
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
               <ChevronRight className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => setCurrentMoveIndex(totalMoves)}
               disabled={currentMoveIndex === totalMoves}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2 py-2.5 text-xs font-body font-bold text-white/75 transition-all hover:border-neon/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
             >
-              End
+              <span className="hidden sm:inline">End</span>
               <SkipForward className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
-              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Current Move</p>
-              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex flex-col justify-between">
+              <p className="text-[9px] font-body font-bold uppercase tracking-[0.2em] text-white/35">Current Move</p>
+              <p className="mt-2 font-display text-xl font-black uppercase text-white truncate">
                 {currentMove?.san || 'Start'}
               </p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
-              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Side To Move</p>
-              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex flex-col justify-between">
+              <p className="text-[9px] font-body font-bold uppercase tracking-[0.2em] text-white/35">Side To Move</p>
+              <p className="mt-2 font-display text-xl font-black uppercase text-white truncate">
                 {currentMoveIndex === totalMoves ? (totalMoves % 2 === 0 ? 'White' : 'Black') : currentMove?.color === 'w' ? 'Black' : 'White'}
               </p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
-              <p className="text-[10px] font-body font-bold uppercase tracking-[0.35em] text-white/35">Result</p>
-              <p className="mt-3 font-display text-3xl font-black uppercase text-white">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex flex-col justify-between">
+              <p className="text-[9px] font-body font-bold uppercase tracking-[0.2em] text-white/35">Result</p>
+              <p className="mt-2 font-display text-xl font-black uppercase text-white truncate">
                 {resultLabel}
               </p>
             </div>
