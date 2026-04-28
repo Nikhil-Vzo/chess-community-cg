@@ -395,7 +395,7 @@ export default function Register() {
               <AlertCircle className="w-5 h-5 text-neon shrink-0 mt-0.5" />
               <div>
                 <p className="text-white/60 text-xs font-body leading-relaxed">
-                  By proceeding, you agree to the tournament regulations and the entry fee of <span className="text-white font-bold">Rs. 900 + Service Tax</span>. Registration is final once payment is confirmed.
+                  By proceeding, you agree to the tournament regulations and the entry fee of <span className="text-white font-bold">Rs. 900 + Service Charge</span>. Registration is final once payment is confirmed.
                 </p>
               </div>
             </div>
