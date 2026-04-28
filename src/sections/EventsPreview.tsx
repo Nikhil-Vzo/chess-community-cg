@@ -65,15 +65,22 @@ function EventCard({ event }: { event: ChessEvent }) {
           {/* Download Brochure for Summer Fiesta */}
           {(event.id === 'summer-fiesta' || event.title.includes('Summer Fiesta')) && (
             <div className="mb-6">
-              <a 
-                href="/brochure.jpeg"
-                download="Summer_Fiesta_Brochure.jpeg"
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const link = document.createElement('a');
+                  link.href = '/brochure.jpeg';
+                  link.download = 'Summer_Fiesta_Brochure.jpeg';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
                 className="inline-flex items-center gap-2 px-4 py-2 border border-neon/30 bg-neon/10 text-neon font-body font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-neon hover:text-dark transition-all duration-300"
-                onClick={(e) => e.stopPropagation()}
               >
                 <Download className="w-3 h-3" />
                 Download Brochure
-              </a>
+              </button>
             </div>
           )}
 
@@ -221,15 +228,22 @@ export function EventsPreview() {
                       9th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
                     </p>
                     <div className="flex items-center gap-4">
-                      <a 
-                        href="/brochure.jpeg"
-                        download="Summer_Fiesta_Brochure.jpeg"
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const link = document.createElement('a');
+                          link.href = '/brochure.jpeg';
+                          link.download = 'Summer_Fiesta_Brochure.jpeg';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
                         className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 hover:border-white text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <Download className="w-4 h-4" />
                         Download Brochure
-                      </a>
+                      </button>
                       <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl">
                         View Details
                         <ArrowRight className="w-4 h-4" />
