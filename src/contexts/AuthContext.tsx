@@ -54,19 +54,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isProfileLoaded, setIsProfileLoaded] = useState(false)
 
   const fetchProfile = useCallback(async (userId: string) => {
-    setIsProfileLoaded(false)
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    // We don't use the 'profile' state directly here to avoid dependency cycles.
+    // Instead, we just fetch and update.
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
 
-    if (data && !error) {
-      setProfile(data)
-    } else {
-      setProfile(null)
+      if (data && !error) {
+        setProfile(data)
+      } else if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error)
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching profile:', err)
+    } finally {
+      setIsProfileLoaded(true)
     }
-    setIsProfileLoaded(true)
   }, [])
 
   useEffect(() => {

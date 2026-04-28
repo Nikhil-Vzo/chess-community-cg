@@ -1,63 +1,114 @@
 import { supabase } from './supabase'
 import type { ChessEvent, Playlist, Video } from '@/types'
 
+const DEFAULT_TIMEOUT = 10000 // 10 seconds
+
+async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number = DEFAULT_TIMEOUT): Promise<T> {
+  let timeoutId: any
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+  })
+
+  try {
+    // We wrap the promiseLike in a real Promise to ensure catch/finally availability
+    const result = await Promise.race([Promise.resolve(promise), timeoutPromise])
+    return result
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
 export const supabaseService = {
   // EVENTS
   async getEvents() {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .order('date', { ascending: true })
-    if (error) throw error
-    
-    // Map database fields to frontend types if needed
-    return ((data as any[]) || []).map(event => ({
-      ...event,
-      entryFee: Number(event.entry_fee)
-    })) as ChessEvent[]
+    try {
+      const { data, error } = await withTimeout<any>(
+        supabase
+          .from('events')
+          .select('*')
+          .order('date', { ascending: true })
+      )
+      if (error) throw error
+      
+      return ((data as any[]) || []).map(event => ({
+        ...event,
+        entryFee: Number(event.entry_fee)
+      })) as ChessEvent[]
+    } catch (err) {
+      console.error('getEvents failed:', err)
+      return [] // Return empty instead of hanging
+    }
   },
 
   async getEventById(id: string) {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('id', id)
-      .single()
-    if (error) throw error
-    const row = data as any
-    return {
-      ...row,
-      entryFee: Number(row.entry_fee)
-    } as ChessEvent
+    try {
+      const { data, error } = await withTimeout<any>(
+        supabase
+          .from('events')
+          .select('*')
+          .eq('id', id)
+          .single()
+      )
+      if (error) throw error
+      const row = data as any
+      return {
+        ...row,
+        entryFee: Number(row.entry_fee)
+      } as ChessEvent
+    } catch (err) {
+      console.error('getEventById failed:', err)
+      throw err
+    }
   },
 
   // PLAYLISTS & VIDEOS
   async getPlaylists() {
-    const { data, error } = await supabase
-      .from('playlists')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    return data as Playlist[]
+    try {
+      const { data, error } = await withTimeout<any>(
+        supabase
+          .from('playlists')
+          .select('*')
+          .order('created_at', { ascending: false })
+      )
+      if (error) throw error
+      return data as Playlist[]
+    } catch (err) {
+      console.error('getPlaylists failed:', err)
+      return []
+    }
   },
 
   async getVideosByPlaylist(playlistId: string) {
-    const { data, error } = await supabase
-      .from('videos')
-      .select('*')
-      .eq('playlist_id', playlistId)
-      .order('order_index', { ascending: true })
-    if (error) throw error
-    return data as Video[]
+    try {
+      const { data, error } = await withTimeout<any>(
+        supabase
+          .from('videos')
+          .select('*')
+          .eq('playlist_id', playlistId)
+          .order('order_index', { ascending: true })
+      )
+      if (error) throw error
+      return data as Video[]
+    } catch (err) {
+      console.error('getVideosByPlaylist failed:', err)
+      return []
+    }
   },
 
   async getAllVideos() {
-    const { data, error } = await supabase
-      .from('videos')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    return data as Video[]
+    try {
+      const { data, error } = await withTimeout<any>(
+        supabase
+          .from('videos')
+          .select('*')
+          .order('created_at', { ascending: false })
+      )
+      if (error) throw error
+      return data as Video[]
+    } catch (err) {
+      console.error('getAllVideos failed:', err)
+      return []
+    }
   },
 
   // REGISTRATIONS
