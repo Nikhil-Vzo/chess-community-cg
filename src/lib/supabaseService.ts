@@ -117,7 +117,7 @@ export const supabaseService = {
   async getAllVideos() {
     try {
       const { data, error } = await fetchWithRetry(
-        () => supabase.from('videos').select('*').order('created_at', { ascending: false }),
+        () => supabase.from('videos').select('*').order('order_index', { ascending: true }),
         'getAllVideos'
       )
       if (error) throw error
