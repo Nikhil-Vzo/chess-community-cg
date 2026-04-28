@@ -142,7 +142,7 @@ export default function EventDetails() {
               <div className="text-right">
                 <p className="text-white/40 text-xs font-body uppercase tracking-wider">Entry Fee</p>
                 <p className="text-neon font-display text-3xl font-bold">
-                  Rs. 900 + Service Charge
+                  Rs. {event.entryFee} + Service Charge
                 </p>
               </div>
               <button
