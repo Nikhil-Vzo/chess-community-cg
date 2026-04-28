@@ -80,7 +80,7 @@ function EventCard({ event }: { event: ChessEvent }) {
           <div className="flex items-center justify-between">
             <span className="text-white font-display font-black text-lg flex items-baseline gap-1">
               ₹{event.entryFee?.toLocaleString() || '0'}
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">+ Service Tax</span>
+              <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">+ Service Charge</span>
             </span>
             <span className="flex items-center gap-1 text-[10px] font-bold text-white/30 group-hover:text-neon transition-colors uppercase tracking-widest">
               Details
