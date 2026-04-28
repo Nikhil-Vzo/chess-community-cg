@@ -25,7 +25,7 @@ export default function About() {
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-px w-8 bg-neon" />
-                <p className="text-neon text-[10px] font-bold uppercase tracking-[0.4em]">Founder Story</p>
+                <p className="text-neon text-[10px] font-bold uppercase tracking-[0.4em]">Indian Chess Community</p>
               </div>
               <h1 className="font-display text-5xl md:text-8xl font-black text-white uppercase mb-8 leading-[0.9]">
                 Amogh <span className="text-neon">Yadav</span>
@@ -34,7 +34,7 @@ export default function About() {
                 “Tejasvi purush ki umar nahi dekhi jaati.”
               </p>
               <p className="text-white/40 font-body text-lg leading-relaxed mb-10 max-w-xl">
-                If there’s one person who turns vision into action, it’s Amogh Yadav — the founder of CCR Youth and Chess City Raipur. From organizing open-air chess tournaments to state-level championships, he has transformed the chess culture in Chhattisgarh.
+                If there’s one person who turns vision into action, it’s Amogh Yadav — the founder of Indian Chess Community. From organizing open-air chess tournaments to state-level championships, he has transformed the chess culture in Chhattisgarh.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -74,8 +74,8 @@ export default function About() {
                 />
               </div>
               <div className="mt-6 glass p-6 rounded-2xl border border-white/10 backdrop-blur-xl">
-                <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1">Founder & CEO</p>
-                <p className="text-white font-display text-xl font-black uppercase">CCR Youth & Chess City Raipur</p>
+                <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1">Indian Chess Community</p>
+                <p className="text-white font-display text-xl font-black uppercase">Amogh Yadav</p>
               </div>
             </motion.div>
           </div>
@@ -113,7 +113,7 @@ export default function About() {
                 </h2>
                 <div className="space-y-6 text-white/60 font-body text-lg leading-relaxed">
                   <p>
-                    I'm Amogh Yadav – a youth leader, content creator, and founder of CCR Youth and Indian Chess Community. Over the past several years, I’ve dedicated myself to organizing impactful chess events, empowering young minds, and building platforms that spark real change across India.
+                    I'm Amogh Yadav – a youth leader, content creator, and founder of Indian Chess Community. Over the past several years, I’ve dedicated myself to organizing impactful chess events, empowering young minds, and building platforms that spark real change across India.
                   </p>
                   <p>
                     From growing an Instagram presence to over 12 million views per month to taking local talent to national platforms, I’ve always believed that age should never limit ambition.
