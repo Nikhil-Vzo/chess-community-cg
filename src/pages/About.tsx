@@ -180,6 +180,10 @@ export default function About() {
               </motion.div>
             </div>
           </div>
+
+
+
+
           {/* Founder - Mr. Vinesh Doultani Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mt-32 mb-16">
             <div className="lg:col-span-5 order-2 lg:order-1">
@@ -193,7 +197,7 @@ export default function About() {
                 <div className="relative rounded-[40px] overflow-hidden border border-white/10 transform transition-transform group-hover:scale-[1.02] duration-700">
                   <img src="/abt-2.jpeg" alt="Mr. Vinesh Doultani" className="w-full h-auto" />
                 </div>
-                
+
                 <div className="mt-8 glass p-6 rounded-2xl border border-white/10 backdrop-blur-xl">
                   <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1">Founder, Chess City Raipur</p>
                   <p className="text-white font-display text-xl font-black uppercase">Mr. Vinesh Doultani</p>
@@ -214,7 +218,7 @@ export default function About() {
                 <h2 className="font-display text-4xl md:text-5xl font-black text-white uppercase mb-8 leading-tight">
                   Mr. Vinesh <span className="text-neon">Doultani</span>
                 </h2>
-                
+
                 <p className="text-xl text-white/80 font-body leading-relaxed mb-6 italic border-l-4 border-neon pl-6">
                   “Chess is not just a game; it is a platform to build confidence, character, and a sharper mind.”
                 </p>
@@ -239,6 +243,76 @@ export default function About() {
               </motion.div>
             </div>
           </div>
+
+
+
+
+          {/*new section */}
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center mt-32 mb-16">
+            <div className="lg:col-span-5 order-2 lg:order-1">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-neon/20 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-40 transition-opacity" />
+                <div className="relative rounded-[40px] overflow-hidden border border-white/10 transform transition-transform group-hover:scale-[1.02] duration-700">
+                  <img src="./public/images/adv.jpeg" alt="Adv. Ravi Rochlani" className="w-full h-auto" />
+                </div>
+
+                <div className="mt-8 glass p-6 rounded-2xl border border-white/10 backdrop-blur-xl">
+                  <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1"></p>
+                  <p className="text-white font-display text-xl font-black uppercase">Adv. Ravi Rochlani</p>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="lg:col-span-7 order-1 lg:order-2 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-px w-8 bg-neon" />
+                  <p className="text-neon text-[10px] font-bold uppercase tracking-[0.4em]">Chess Promoter, Organizer & Competitive Player</p>
+                </div>
+                <h2 className="font-display text-4xl md:text-5xl font-black text-white uppercase mb-8 leading-tight">
+                  Adv. Ravi <span className="text-neon">Rochlani</span>
+                </h2>
+
+                <p className="text-xl text-white/80 font-body leading-relaxed mb-6 italic border-l-4 border-neon pl-6">
+                  “Chess is not just a game; it is a platform to build confidence, character, and a sharper mind.”
+                </p>
+
+                <div className="space-y-6 text-white/60 font-body text-lg leading-relaxed">
+                  <p>
+                    Driving force behind Chess City Raipur, organizing structured tournaments across Chhattisgarh.
+                  </p>
+                  <p>
+                    Actively promotes chess at the grassroots level, focusing on accessibility and youth engagement.
+                  </p>
+                  <p>
+                    Experienced competitive player with participation in FIDE-rated and national-level championships.
+                  </p>
+                  <p>
+                    Visionary founder of the upcoming Chess Times Foundation to connect and grow the global chess community.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
         </div>
       </main>
 
