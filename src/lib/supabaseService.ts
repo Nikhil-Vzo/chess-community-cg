@@ -1,32 +1,59 @@
 import { supabase } from './supabase'
 import type { ChessEvent, Playlist, Video } from '@/types'
 
-const DEFAULT_TIMEOUT = 10000 // 10 seconds
+const TIMEOUT_MS = 12000  // 12 seconds per attempt
+const MAX_RETRIES = 2     // retry up to 2 times after initial failure
 
-async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number = DEFAULT_TIMEOUT): Promise<T> {
-  let timeoutId: any
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
-  })
+/**
+ * Executes a query factory with timeout + automatic retry.
+ * 
+ * Key insight: we take a FACTORY FUNCTION (not a promise) so each retry
+ * creates a fresh Supabase query. This is critical because when a browser
+ * tab goes idle, the underlying HTTP connection becomes stale. Retrying
+ * with the same stale promise would fail again — we need a fresh connection.
+ */
+async function fetchWithRetry<T>(
+  queryFn: () => PromiseLike<T>,
+  label: string,
+  retries: number = MAX_RETRIES
+): Promise<T> {
+  let lastError: any
 
-  try {
-    // We wrap the promiseLike in a real Promise to ensure catch/finally availability
-    const result = await Promise.race([Promise.resolve(promise), timeoutPromise])
-    return result
-  } finally {
-    clearTimeout(timeoutId)
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      // Create a FRESH query/promise on each attempt
+      const promise = queryFn()
+
+      // Race against a timeout
+      const result = await Promise.race([
+        Promise.resolve(promise),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`${label} timed out (attempt ${attempt + 1})`)), TIMEOUT_MS)
+        ),
+      ])
+
+      return result
+    } catch (err) {
+      lastError = err
+      console.warn(`${label}: attempt ${attempt + 1} failed:`, err instanceof Error ? err.message : err)
+
+      if (attempt < retries) {
+        // Brief pause before retry to let the connection reset
+        await new Promise(r => setTimeout(r, 500))
+      }
+    }
   }
+
+  throw lastError
 }
 
 export const supabaseService = {
   // EVENTS
   async getEvents() {
     try {
-      const { data, error } = await withTimeout<any>(
-        supabase
-          .from('events')
-          .select('*')
-          .order('date', { ascending: true })
+      const { data, error } = await fetchWithRetry(
+        () => supabase.from('events').select('*').order('date', { ascending: true }),
+        'getEvents'
       )
       if (error) throw error
       
@@ -35,19 +62,16 @@ export const supabaseService = {
         entryFee: Number(event.entry_fee)
       })) as ChessEvent[]
     } catch (err) {
-      console.error('getEvents failed:', err)
-      return [] // Return empty instead of hanging
+      console.error('getEvents failed after retries:', err)
+      return []
     }
   },
 
   async getEventById(id: string) {
     try {
-      const { data, error } = await withTimeout<any>(
-        supabase
-          .from('events')
-          .select('*')
-          .eq('id', id)
-          .single()
+      const { data, error } = await fetchWithRetry(
+        () => supabase.from('events').select('*').eq('id', id).single(),
+        'getEventById'
       )
       if (error) throw error
       const row = data as any
@@ -56,7 +80,7 @@ export const supabaseService = {
         entryFee: Number(row.entry_fee)
       } as ChessEvent
     } catch (err) {
-      console.error('getEventById failed:', err)
+      console.error('getEventById failed after retries:', err)
       throw err
     }
   },
@@ -64,49 +88,42 @@ export const supabaseService = {
   // PLAYLISTS & VIDEOS
   async getPlaylists() {
     try {
-      const { data, error } = await withTimeout<any>(
-        supabase
-          .from('playlists')
-          .select('*')
-          .order('created_at', { ascending: false })
+      const { data, error } = await fetchWithRetry(
+        () => supabase.from('playlists').select('*').order('created_at', { ascending: false }),
+        'getPlaylists'
       )
       if (error) throw error
       return data as Playlist[]
     } catch (err) {
-      console.error('getPlaylists failed:', err)
+      console.error('getPlaylists failed after retries:', err)
       return []
     }
   },
 
   async getVideosByPlaylist(playlistId: string) {
     try {
-      const { data, error } = await withTimeout<any>(
-        supabase
-          .from('videos')
-          .select('*')
-          .eq('playlist_id', playlistId)
-          .order('order_index', { ascending: true })
+      const { data, error } = await fetchWithRetry(
+        () => supabase.from('videos').select('*').eq('playlist_id', playlistId).order('order_index', { ascending: true }),
+        'getVideosByPlaylist'
       )
       if (error) throw error
       return data as Video[]
     } catch (err) {
-      console.error('getVideosByPlaylist failed:', err)
+      console.error('getVideosByPlaylist failed after retries:', err)
       return []
     }
   },
 
   async getAllVideos() {
     try {
-      const { data, error } = await withTimeout<any>(
-        supabase
-          .from('videos')
-          .select('*')
-          .order('created_at', { ascending: false })
+      const { data, error } = await fetchWithRetry(
+        () => supabase.from('videos').select('*').order('created_at', { ascending: false }),
+        'getAllVideos'
       )
       if (error) throw error
       return data as Video[]
     } catch (err) {
-      console.error('getAllVideos failed:', err)
+      console.error('getAllVideos failed after retries:', err)
       return []
     }
   },
@@ -167,3 +184,4 @@ export const supabaseService = {
     return data
   }
 }
+
