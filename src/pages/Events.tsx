@@ -245,7 +245,7 @@ export default function Events() {
                           <p className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mb-1">Entry Fee</p>
                           <span className="text-white font-display font-black text-xl flex items-baseline gap-1">
                             ₹{event.entryFee.toLocaleString()}
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">+ Service Charge</span>
+                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">incl. Convenience Fee</span>
                           </span>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-neon group-hover:text-dark transition-all duration-500">

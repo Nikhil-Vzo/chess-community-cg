@@ -209,7 +209,7 @@ export default function SummerFiesta() {
                   </div>
                   <div>
                     <p className="text-white/50 text-[10px] uppercase tracking-widest font-bold">Entry Fee</p>
-                    <p className="font-bold text-neon">₹{dbEvent?.entryFee || 900} + Service Charge</p>
+                    <p className="font-bold text-neon">₹{dbEvent?.entryFee || 900} (incl. Convenience Fee)</p>
                   </div>
                 </div>
               </div>

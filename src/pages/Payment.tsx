@@ -276,7 +276,7 @@ export default function Payment() {
               <div className="border-t my-3" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }} />
               <div className="flex justify-between items-center">
                 <span className="font-display font-bold text-lg" style={{ color: '#1c1917' }}>Total Amount</span>
-                <span className="font-display font-bold text-2xl text-neon">Rs. {event.entryFee} + Service Charge</span>
+                <span className="font-display font-bold text-2xl text-neon">Rs. {event.entryFee} (incl. Convenience Fee)</span>
               </div>
             </div>
           </motion.div>
@@ -341,7 +341,7 @@ export default function Payment() {
               ) : (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Pay Rs. {event.entryFee} + Service Charge
+                  Pay Rs. {event.entryFee} (incl. Convenience Fee)
                 </>
               )}
             </button>
