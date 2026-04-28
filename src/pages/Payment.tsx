@@ -68,24 +68,25 @@ export default function Payment() {
       // 2. Create Order on the server
       console.log("Creating order on server with fee:", event.entryFee)
       
-      // Razorpay receipt length must be <= 40 chars. 
-      // Date.now() is 13 chars, id.substring(0,8) is 8 chars. Total ~28 chars.
+      // Razorpay receipt length must be <= 40 chars.
       const safeId = id || 'unknown'
       const receiptId = `rcpt_${Date.now()}_${safeId.substring(0, 8)}`
       
       const order = await supabaseService.createRazorpayOrder(event.entryFee, receiptId)
       console.log("Server responded with order:", order)
 
-      if (order?._server_error) {
-        console.error("Backend Error:", order._server_error)
-        toast.error(`Backend Error: ${order._server_error}`)
+      // Fix #4: Detect backend errors reliably (edge fn returns 200 always for CORS)
+      if (order?._server_error || order?.error) {
+        const errMsg = order._server_error || order.error?.description || 'Unknown backend error'
+        console.error("Backend Error:", errMsg)
+        toast.error(`Payment setup failed: ${errMsg}`)
         setProcessing(false)
         return
       }
 
       if (!order || !order.id) {
         console.error("No valid order ID returned")
-        toast.error('Failed to create payment order.')
+        toast.error('Failed to create payment order. Please try again.')
         setProcessing(false)
         return
       }
@@ -95,7 +96,8 @@ export default function Payment() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
         amount: order.amount,
         currency: order.currency,
-        name: 'Chess Camp Platform',
+        // Fix #2: Use correct brand name
+        name: 'Indian Chess Community',
         description: `Registration for ${event.title}`,
         order_id: order.id,
         handler: async function (response: any) {
@@ -109,44 +111,65 @@ export default function Payment() {
 
             if (verification && verification.verified) {
               // 5. Save registration to DB
-              await supabaseService.createRegistration(
-                user?.id, 
-                event.id, 
-                response.razorpay_payment_id,
-                { 
-                  email: formData.email, 
-                  name: formData.name, 
-                  phone: formData.phone, 
-                  dob: formData.dob,
-                  gender: formData.gender,
-                  state: formData.state,
-                  district: formData.district,
-                  fide_id: formData.fide_id,
+              // Fix #3: Payment already captured — handle DB failure gracefully with recovery info
+              try {
+                await supabaseService.createRegistration(
+                  user?.id, 
+                  event.id, 
+                  response.razorpay_payment_id,
+                  { 
+                    email: formData.email, 
+                    name: formData.name, 
+                    phone: formData.phone, 
+                    dob: formData.dob,
+                    gender: formData.gender,
+                    state: formData.state,
+                    district: formData.district,
+                    fide_id: formData.fide_id,
+                  }
+                )
+                
+                navigate(`/receipt/${id}`, {
+                  state: {
+                    formData,
+                    event,
+                    paymentId: response.razorpay_payment_id,
+                    status: 'completed',
+                  },
+                })
+              } catch (dbErr: any) {
+                // Payment was captured but DB save failed — must not lose this
+                console.error('DB registration save failed after successful payment:', dbErr)
+                const errorCode = dbErr && typeof dbErr === 'object' && 'code' in dbErr ? dbErr.code : null
+                
+                if (errorCode === '23505') {
+                  // Already registered — navigate to receipt anyway
+                  toast.info('You are already registered for this event.')
+                  navigate(`/receipt/${id}`, {
+                    state: { formData, event, paymentId: response.razorpay_payment_id, status: 'completed' },
+                  })
+                } else if (errorCode === '23503') {
+                  toast.error(
+                    `Payment successful (ID: ${response.razorpay_payment_id}), but this event is not yet in our system. Please contact us with this Payment ID so we can register you manually.`,
+                    { duration: 20000 }
+                  )
+                  setProcessing(false)
+                } else {
+                  // Generic DB failure — give user their payment ID for recovery
+                  toast.error(
+                    `Payment received (ID: ${response.razorpay_payment_id}), but we failed to save your registration. Please WhatsApp us this Payment ID and we'll confirm you manually.`,
+                    { duration: 20000 }
+                  )
+                  setProcessing(false)
                 }
-              )
-              
-              navigate(`/receipt/${id}`, {
-                state: {
-                  formData,
-                  event,
-                  paymentId: response.razorpay_payment_id,
-                  status: 'completed',
-                },
-              })
+              }
             } else {
-              toast.error('Payment verification failed.')
+              toast.error('Payment signature verification failed. If money was deducted, please contact us immediately.')
               setProcessing(false)
             }
           } catch (err: any) {
-            console.error('Registration/Verification failed:', err)
-            const errorCode = err && typeof err === 'object' && 'code' in err ? err.code : null
-            if (errorCode === '23503') {
-              toast.error(`Database Error: The event "${event.title}" is a mock event and doesn't exist in the live database yet.`)
-            } else if (errorCode === '23505') {
-              toast.error('You have already registered for this event!')
-            } else {
-              toast.error('Failed to process registration after payment.')
-            }
+            console.error('Verification call failed:', err)
+            toast.error('Could not verify your payment. Please save your payment details and contact support.')
             setProcessing(false)
           }
         },
@@ -156,8 +179,15 @@ export default function Payment() {
           contact: formData.phone,
         },
         theme: {
-          color: '#d4ff33', // Our neon color
+          color: '#d4ff33',
         },
+        modal: {
+          // Fix #1: Reset processing state when user closes/dismisses the modal
+          ondismiss: function () {
+            console.log('Razorpay modal dismissed by user')
+            setProcessing(false)
+          }
+        }
       }
 
       const paymentObject = new (window as any).Razorpay(options)
@@ -169,7 +199,7 @@ export default function Payment() {
 
     } catch (err: unknown) {
       console.error('Payment initialization failed:', err)
-      toast.error('Something went wrong initializing the payment.')
+      toast.error('Something went wrong initializing the payment. Please try again.')
       setProcessing(false)
     }
   }

@@ -10,6 +10,13 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
 }
 
+function jsonResponse(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  })
+}
+
 Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -18,25 +25,32 @@ Deno.serve(async (req: Request) => {
 
   // Handle simple GET test
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ status: "Edge function is alive" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
+    return jsonResponse({ status: "Edge function is alive" })
   }
 
   try {
     const bodyText = await req.text()
     if (!bodyText) {
-      throw new Error("Empty request body")
+      return jsonResponse({ error: "Empty request body" }, 400)
     }
 
     const data = JSON.parse(bodyText)
     const { action, ...rest } = data
-    
-    const razorpayKeyId = Deno.env.get('RAZORPAY_KEY_ID') || 'rzp_test_placeholder_key'
-    const razorpayKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET') || 'placeholder_secret'
+
+    const razorpayKeyId = Deno.env.get('RAZORPAY_KEY_ID')
+    const razorpayKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET')
+
+    // Validate that real keys are configured
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      return jsonResponse({ error: "Razorpay credentials are not configured on the server." }, 500)
+    }
 
     if (action === 'create-order') {
       const { amount, currency = 'INR', receipt } = rest
+
+      if (!amount || !receipt) {
+        return jsonResponse({ error: "Missing required fields: amount, receipt" }, 400)
+      }
       
       const authHeader = "Basic " + btoa(`${razorpayKeyId}:${razorpayKeySecret}`)
       
@@ -47,7 +61,7 @@ Deno.serve(async (req: Request) => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          amount: Math.round(Number(amount) * 100), // ensure it's a valid integer
+          amount: Math.round(Number(amount) * 100), // paise
           currency,
           receipt,
         })
@@ -56,17 +70,18 @@ Deno.serve(async (req: Request) => {
       const order = await response.json()
 
       if (!response.ok) {
-        throw new Error(order.error?.description || "Failed to create Razorpay order")
+        return jsonResponse({ error: order.error?.description || "Failed to create Razorpay order" }, 502)
       }
 
-      return new Response(JSON.stringify(order), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      })
+      return jsonResponse(order)
     }
 
     if (action === 'verify-payment') {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = rest
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        return jsonResponse({ error: "Missing payment verification fields" }, 400)
+      }
       
       const text = `${razorpay_order_id}|${razorpay_payment_id}`
       const expectedSignature = crypto
@@ -75,28 +90,18 @@ Deno.serve(async (req: Request) => {
         .digest('hex')
 
       if (expectedSignature === razorpay_signature) {
-        return new Response(JSON.stringify({ verified: true }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        })
+        return jsonResponse({ verified: true })
       } else {
-        return new Response(JSON.stringify({ verified: false }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        })
+        return jsonResponse({ verified: false }, 400)
       }
     }
 
-    return new Response(JSON.stringify({ error: 'Unknown action' }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
+    return jsonResponse({ error: 'Unknown action' }, 400)
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    return new Response(JSON.stringify({ _server_error: errorMessage }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    })
+    console.error("Edge function error:", errorMessage)
+    return jsonResponse({ error: errorMessage }, 500)
   }
 })
+
