@@ -20,6 +20,8 @@ import SummerFiesta from './pages/SummerFiesta'
 import Store from './pages/Store'
 import About from './pages/About'
 
+import GmCamp from './pages/GmCamp'
+
 function AppContent() {
   const { user, profile, isLoaded, isProfileLoaded } = useAuth()
   const location = useLocation()
@@ -58,6 +60,7 @@ function AppContent() {
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/summer-fiesta" element={<SummerFiesta />} />
+          <Route path="/gm-camp" element={<GmCamp />} />
           <Route path="/store" element={<Store />} />
           <Route path="/videos/:id" element={<VaultPlayer />} />
           <Route path="/vault/:id" element={<VaultPlayer />} />

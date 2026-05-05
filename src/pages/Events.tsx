@@ -5,7 +5,7 @@ import { supabaseService } from '@/lib/supabaseService'
 import type { ChessEvent } from '@/types'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/sections/Footer'
-import { Calendar, MapPin, ArrowRight, Filter, Loader2, Info, Star, Download } from 'lucide-react'
+import { Calendar, MapPin, ArrowRight, Filter, Loader2, Info, Star, Download, Sparkles } from 'lucide-react'
 
 type TabType = 'upcoming' | 'ongoing' | 'past' | 'all'
 
@@ -53,14 +53,6 @@ export default function Events() {
     { label: 'Past Events', value: 'past' },
     { label: 'All', value: 'all' },
   ]
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-dark flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-neon animate-spin" />
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-dark">
@@ -128,7 +120,7 @@ export default function Events() {
                   <div className="flex-1">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neon/30 bg-neon/10 backdrop-blur-md mb-6">
                       <Star className="w-3 h-3 text-neon fill-neon" />
-                      <span className="text-neon text-[10px] font-bold uppercase tracking-widest">Featured Event</span>
+                      <span className="text-neon text-[10px] font-bold uppercase tracking-widest">Featured Tournament</span>
                     </div>
                     <h2 className="font-display text-4xl md:text-5xl font-black uppercase text-white mb-4 group-hover:text-neon transition-colors">
                       Summer Fiesta Grand Chess Open
@@ -137,16 +129,7 @@ export default function Events() {
                       9th May 2026 @ Ambuja City Centre Mall. Total Cash Prize ₹1,00,000+! Registrations open now.
                     </p>
                     <div className="flex items-center gap-4">
-                      <a 
-                        href="/brochure.jpeg"
-                        download="Summer_Fiesta_Brochure.jpeg"
-                        className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 hover:border-white text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Download className="w-4 h-4" />
-                        Download Brochure
-                      </a>
-                      <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl">
+                      <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl transition-all">
                         View Details
                         <ArrowRight className="w-4 h-4" />
                       </span>
@@ -157,8 +140,73 @@ export default function Events() {
             </motion.div>
           )}
 
+          {/* Featured GM Camp Banner (Always visible in all/upcoming for camps) */}
+          {(!activeTab || activeTab === 'all' || activeTab === 'upcoming') && (!typeParam || typeParam === 'camp') && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-12"
+            >
+              <Link 
+                to="/gm-camp"
+                className="group relative block overflow-hidden rounded-[40px] glass border border-neon/50 hover:border-neon transition-all duration-500"
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(200,255,46,0.1),transparent_70%)]" />
+                <div className="absolute right-0 top-0 w-1/2 h-full opacity-30 blur-sm group-hover:scale-105 transition-transform duration-700">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Sriram_Jha_19th_Bangkok_Chess_Club_Open.jpg" alt="GM ShriRam Jha" className="w-full h-full object-cover object-[center_20%]" />
+                </div>
+                
+                <div className="relative p-8 md:p-12 z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex-1">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neon/30 bg-neon/10 backdrop-blur-md mb-6">
+                      <Sparkles className="w-3 h-3 text-neon" />
+                      <span className="text-neon text-[10px] font-bold uppercase tracking-widest">Premium Training</span>
+                    </div>
+                    <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black uppercase text-white mb-4 group-hover:text-neon transition-colors leading-none">
+                      GM ShriRam Jha <br />
+                      <span className="text-neon italic">Masterclass Camp</span>
+                    </h2>
+                    <p className="font-body text-white/50 max-w-xl mb-8">
+                      12 Live GM Sessions • Peak Elo 2511 • Comprehensive Syllabus. Starts 16th Nov. Exclusive Early Bird Discount.
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl transition-all">
+                        Register Now
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          )}
+
           {/* Events Grid */}
-          <AnimatePresence mode="wait">
+          {loading ? (
+            <div className="py-32 flex flex-col items-center justify-center gap-6">
+              <Loader2 className="w-12 h-12 text-neon animate-spin" />
+              <p className="text-white/20 font-body text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse">
+                Fetching latest sessions...
+              </p>
+            </div>
+          ) : filteredEvents.length === 0 ? (
+            <div className="py-32 glass rounded-[40px] border border-white/5 flex flex-col items-center justify-center text-center px-6">
+              <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-8">
+                <Info className="w-8 h-8 text-white/20" />
+              </div>
+              <h3 className="font-display text-3xl font-black text-white uppercase mb-4">No events found</h3>
+              <p className="text-white/40 font-body max-w-md mx-auto mb-10">
+                We couldn't find any events matching your criteria. Try switching tabs or check back later!
+              </p>
+              <button 
+                onClick={() => { setActiveTab('all'); }}
+                className="px-8 py-4 bg-white/5 border border-white/10 text-white font-body text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-neon hover:text-dark hover:border-neon transition-all"
+              >
+                Show All Events
+              </button>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (typeParam || 'all')}
               initial={{ opacity: 0, y: 10 }}
@@ -258,24 +306,6 @@ export default function Events() {
               ))}
             </motion.div>
           </AnimatePresence>
-
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-32 glass rounded-[40px] border border-dashed border-white/10">
-              <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                <Info className="w-8 h-8 text-white/20" />
-              </div>
-              {typeParam === 'camp' ? (
-                <>
-                  <h3 className="font-display text-3xl font-black text-white uppercase mb-2">Camps Coming Soon</h3>
-                  <p className="text-white/40 font-body text-sm">We are preparing some exciting training programs. Stay tuned!</p>
-                </>
-              ) : (
-                <>
-                  <h3 className="font-display text-xl font-bold text-white uppercase mb-2">No matches found</h3>
-                  <p className="text-white/30 font-body text-sm">We couldn't find any {typeParam || 'events'} in the {activeTab} category.</p>
-                </>
-              )}
-            </div>
           )}
         </div>
       </main>

@@ -260,7 +260,7 @@ export default function About() {
                 <div className="absolute inset-0 bg-neon/20 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-40 transition-opacity" />
                 <div className="relative rounded-[40px] overflow-hidden border border-white/10 transform transition-transform group-hover:scale-[1.02] duration-700">
                   <img src="./public/images/adv.jpeg" alt="Adv. Ravi Rochlani" className="w-full h-auto" />
-                </div>
+                </div>  
 
                 <div className="mt-8 glass p-6 rounded-2xl border border-white/10 backdrop-blur-xl">
                   <p className="text-neon text-[10px] font-bold uppercase tracking-widest mb-1"></p>

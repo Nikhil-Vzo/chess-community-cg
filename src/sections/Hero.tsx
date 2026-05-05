@@ -69,7 +69,7 @@ export function Hero() {
 
         {/* Right Asset - Highly Optimized Three.js Canvas */}
         <motion.div
-          className="absolute inset-0 z-[-1] flex items-center justify-center h-full w-full opacity-25 pointer-events-none lg:static lg:z-0 lg:opacity-100 lg:pointer-events-auto lg:min-h-0 lg:translate-x-16"
+          className="absolute inset-0 z-[-1] flex items-center justify-center h-full w-full opacity-25 pointer-events-none lg:static lg:z-0 lg:opacity-100 lg:pointer-events-auto lg:min-h-0 lg:translate-x-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.2 }}
