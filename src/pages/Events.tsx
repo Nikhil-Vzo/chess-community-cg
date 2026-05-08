@@ -163,11 +163,11 @@ export default function Events() {
                       <span className="text-neon text-[10px] font-bold uppercase tracking-widest">Premium Training</span>
                     </div>
                     <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black uppercase text-white mb-4 group-hover:text-neon transition-colors leading-none">
-                      GM ShriRam Jha <br />
+                      GM ThejKumar Sir <br />
                       <span className="text-neon italic">Masterclass Camp</span>
                     </h2>
                     <p className="font-body text-white/50 max-w-xl mb-8">
-                      12 Live GM Sessions • Peak Elo 2511 • Comprehensive Syllabus. Starts 16th Nov. Exclusive Early Bird Discount.
+                      10 Live GM Sessions • Peak Elo 2501 • How To Analyze Like A Grand Master. Starts 17th May. Exclusive Early Bird Discount.
                     </p>
                     <div className="flex items-center gap-4">
                       <span className="inline-flex items-center gap-2 px-6 py-3 bg-neon text-dark font-body font-black text-xs uppercase tracking-widest rounded-xl transition-all">

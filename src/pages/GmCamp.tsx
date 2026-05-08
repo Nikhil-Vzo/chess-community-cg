@@ -11,9 +11,10 @@ import {
   ArrowRight,
   Phone,
   Zap,
-  ExternalLink,
-  Crown,
   Download,
+  Crown,
+  Search,
+  ExternalLink,
 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 
@@ -56,19 +57,20 @@ const CountdownTimer = ({ targetDate }: { targetDate: string }) => {
 /* ─── Camp Info ───────────────────────────────────────────────────────────── */
 const CAMP_INFO = {
   whatsappLink: 'https://chat.whatsapp.com/Fukp03qgtHMA3TtbksbIHt',
-  earlyBirdDeadline: '2026-11-09T00:00:00',   // future date so timer ticks
-  brochure: '/campbro.jpeg',
+  earlyBirdDeadline: '2026-05-12T23:59:59', // Based on "Early Bird Offer Till 12 May 2026"
+  brochure: '/new-bro-camp.png',
   contacts: [
     { name: 'Mr. Vinesh Doultani', phone: '7869925072' },
+    { name: 'Mr. Amogh', phone: '7747043221' },
     { name: 'Mr. Anand Roy', phone: '6268106780' },
   ],
   topics: [
-    { title: 'Tactical Patterns', desc: 'Advanced combination patterns and calculation techniques.', icon: <Zap className="w-6 h-6" />, color: 'bg-blue-500' },
-    { title: 'Opening Repertoire', desc: 'Modern theory and building a personal opening engine.', icon: <Target className="w-6 h-6" />, color: 'bg-purple-500' },
-    { title: 'Endgame Mastery', desc: 'Critical technical endgames every player must master.', icon: <Trophy className="w-6 h-6" />, color: 'bg-neon' },
-    { title: 'Model Games', desc: 'Essential games every serious player must know. Deep analysis of legends.', icon: <Users className="w-6 h-6" />, color: 'bg-orange-500' },
-    { title: 'Positional Mastery', desc: 'Pawn structures, weak squares, and good vs bad pieces (3 Classes).', icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-emerald-500' },
-    { title: 'Middle Game Strategy', desc: 'Tactics, calculation, and clinical decision making under pressure.', icon: <Zap className="w-6 h-6" />, color: 'bg-red-500' },
+    { title: 'How To Analyze', desc: 'Learn the structured thinking process of a Grandmaster during game analysis.', icon: <Search className="w-6 h-6" />, color: 'bg-blue-500' },
+    { title: 'Grandmaster Vision', desc: 'Develop the tactical and positional awareness that separates the elite.', icon: <Target className="w-6 h-6" />, color: 'bg-purple-500' },
+    { title: 'Strategic Approach', desc: 'Master the high-level decision making and planning techniques of a GM.', icon: <Zap className="w-6 h-6" />, color: 'bg-neon' },
+    { title: 'Positional Mastery', desc: 'Deep dive into complex structures and positional nuances.', icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-emerald-500' },
+    { title: 'Endgame Precision', desc: 'Technical endgame skills required to convert small advantages.', icon: <Trophy className="w-6 h-6" />, color: 'bg-orange-500' },
+    { title: 'Elite Psychology', desc: 'Manage pressure and maintain focus like a Grandmaster.', icon: <Users className="w-6 h-6" />, color: 'bg-red-500' },
   ],
 };
 
@@ -117,20 +119,20 @@ const GmCamp = () => {
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon/10 border border-neon/30 text-neon text-[10px] font-black uppercase tracking-[0.3em] mb-8">
                 <Crown className="w-4 h-4" />
-                Nov 9th – Nov 20th • Live Residency
+                May 17th – June 17th • Live Online
               </div>
 
-              <h1 className="font-display text-5xl sm:text-7xl lg:text-[110px] font-black leading-[0.9] mb-8 uppercase tracking-tighter">
-                GRAND<br />MASTER<br />
-                <span className="text-neon">CAMP 1.0</span>
+              <h1 className="font-display text-5xl sm:text-7xl lg:text-[90px] font-black leading-[0.9] mb-8 uppercase tracking-tighter">
+                ANALYZE LIKE<br />A GRAND<br />
+                <span className="text-neon">MASTER</span>
               </h1>
 
               <p className="text-base sm:text-lg text-white/55 font-body leading-relaxed max-w-lg mb-10">
                 Join{' '}
                 <span className="text-white font-bold italic underline decoration-neon/40 underline-offset-4">
-                  GM Sriram Jha
+                  GM ThejKumar Sir
                 </span>{' '}
-                for a 12-day elite residency. Master the technical nuances of the 6 core pillars of chess strategy with one of India's most respected grandmasters.
+                for an intensive 10-class masterclass. Master the vision, approach, and analytical depth of India's 50th Grandmaster.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -141,7 +143,7 @@ const GmCamp = () => {
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-neon text-dark rounded-2xl font-display text-base font-black uppercase tracking-tighter hover:bg-white hover:shadow-[0_0_50px_rgba(200,255,46,0.3)] transition-all duration-500 group"
                 >
                   <MessageSquare className="w-5 h-5" />
-                  Join to Register
+                  Join WhatsApp to Pay & Register
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <button
@@ -188,10 +190,10 @@ const GmCamp = () => {
                 {/* Name tag */}
                 <div className="absolute bottom-8 left-8 right-8 z-10">
                   <p className="text-neon font-display text-3xl sm:text-4xl font-black uppercase tracking-tighter leading-none mb-1">
-                    GM Sriram Jha
+                    GM ThejKumar Sir
                   </p>
                   <p className="text-white/50 text-xs font-bold uppercase tracking-widest">
-                    Peak Elo 2511 · Senior Trainer
+                    Peak Elo 2501 · India's 50th GM
                   </p>
                 </div>
               </div>
@@ -201,16 +203,62 @@ const GmCamp = () => {
         </div>
       </section>
 
+      {/* ── Coach's Achievements ── */}
+      <section className="py-20 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="font-display text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-8">
+                Coach's <span className="text-neon">Achievements</span>
+              </h2>
+              <div className="space-y-4">
+                {[
+                  'First Grandmaster From Karnataka',
+                  "India's 50th Grandmaster (2017)",
+                  'Winner Of National U-25 Championship (2003)',
+                  'Winner Of Indian National B Championship (2013)',
+                  'Champion Of Liffre Open, France (2016)',
+                  'Winner Of Guingamp Open (2017)',
+                ].map((ach, i) => (
+                  <div key={i} className="flex items-start gap-4 group">
+                    <div className="w-6 h-6 rounded-lg bg-neon/10 border border-neon/20 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-neon group-hover:text-dark transition-all">
+                      <Star className="w-3 h-3" />
+                    </div>
+                    <p className="text-white/60 font-body text-sm sm:text-base leading-relaxed group-hover:text-white transition-colors">
+                      {ach}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-10 p-6 rounded-2xl bg-white/5 border border-white/10 text-white/40 italic font-body text-sm leading-relaxed">
+                "Known For Strong Positional And Strategic Gameplay. Inspiring Journey Through Dedication, Self-learning & Perseverance."
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                "https://upload.wikimedia.org/wikipedia/commons/1/11/Sriram_Jha_19th_Bangkok_Chess_Club_Open.jpg",
+                "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=800",
+              ].map((img, i) => (
+                <div key={i} className={`rounded-3xl overflow-hidden border border-white/10 ${i === 1 ? 'mt-8' : 'mb-8'}`}>
+                  <img src={img} alt="Achievement" className="w-full aspect-[3/4] object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Marquee ── */}
       <section className="py-10 bg-white/[0.02] border-y border-white/5 overflow-hidden">
         <div className="flex whitespace-nowrap animate-marquee">
           {[1, 2, 3, 4].map((n) => (
             <div key={n} className="flex gap-16 items-center mx-10">
-              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white/10 uppercase italic">12 Live Sessions</span>
+              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white/10 uppercase italic">10 Live Classes</span>
               <div className="w-3 h-3 rounded-full bg-neon/30 flex-shrink-0" />
-              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-neon uppercase italic tracking-tighter">Peak Elo 2511</span>
+              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-neon uppercase italic tracking-tighter">Peak Elo 2501</span>
               <div className="w-3 h-3 rounded-full bg-neon/30 flex-shrink-0" />
-              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white/10 uppercase italic">Recorded Classes</span>
+              <span className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white/10 uppercase italic">Analyze Like A GM</span>
               <div className="w-3 h-3 rounded-full bg-neon/30 flex-shrink-0" />
             </div>
           ))}
@@ -239,9 +287,9 @@ const GmCamp = () => {
                 </h2>
                 <div className="space-y-4 mb-10">
                   {[
-                    '12 Exclusive GM Live Sessions',
-                    'Lifetime Access to Class Recordings',
-                    'Bonus: 12 IM Lectures (75% Off)',
+                    '10 Intensive GM Live Sessions',
+                    'How To Analyze Like A Grand Master',
+                    'Vision & Approach Of A GM',
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-neon/20 flex items-center justify-center flex-shrink-0">
@@ -263,8 +311,8 @@ const GmCamp = () => {
                     Join Group to Register
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em] text-center">
-                    Registration &amp; payment form shared in group
+                  <p className="text-[12px] font-bold text-neon uppercase tracking-[0.25em] text-center bg-neon/5 py-3 rounded-xl border border-neon/20">
+                    Registration &amp; payment link will be shared in the WhatsApp group
                   </p>
                 </div>
               </div>
@@ -280,7 +328,7 @@ const GmCamp = () => {
                     ₹1,000 <span className="text-neon">OFF</span>
                   </p>
                   <p className="text-white/30 text-[10px] font-black uppercase tracking-widest">
-                    Valid Until 9th November Only
+                    Valid Until 12th May Only
                   </p>
                 </div>
               </div>
