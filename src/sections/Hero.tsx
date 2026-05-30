@@ -18,9 +18,9 @@ export function Hero() {
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neon/30 bg-neon/10 backdrop-blur-md mb-6"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-neon animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-neon animate-pulse" aria-hidden="true" />
             <span className="text-neon text-[9px] font-bold uppercase tracking-widest">Chhattisgarh Chess Union</span>
           </motion.div>
 
@@ -38,7 +38,7 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            className="mt-6 max-w-xl font-body text-base leading-relaxed text-white/50"
+            className="mt-6 max-w-xl font-body text-base leading-relaxed text-white/60"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -58,14 +58,14 @@ export function Hero() {
               className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-xl bg-neon px-8 py-3.5 font-body text-xs font-black uppercase tracking-[0.2em] text-dark transition-all hover:shadow-[0_0_30px_rgba(200,255,46,0.4)] active:scale-95"
             >
               Explore Tournaments
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
             </Link>
 
             <Link
               href="/videos"
               className="group inline-flex items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-8 py-3.5 font-body text-xs font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/10"
             >
-              <PlayCircle className="h-4 w-4 text-neon" />
+              <PlayCircle className="h-4 w-4 text-neon" aria-hidden="true" />
               Study Vault
             </Link>
           </motion.div>
@@ -76,10 +76,10 @@ export function Hero() {
           className="relative flex items-center justify-center aspect-square w-full max-w-[450px] mx-auto border border-white/5 rounded-3xl bg-black/20 overflow-hidden"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
+          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Flat 2D Board Coordinate Details */}
-          <div className="absolute inset-0 p-4 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25">
+          <div className="absolute inset-0 p-4 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25" aria-hidden="true">
             <div className="flex justify-between w-full px-4">
               <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span>
             </div>
@@ -87,10 +87,10 @@ export function Hero() {
               <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span>
             </div>
           </div>
-          <div className="absolute inset-y-8 left-4 bottom-8 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25">
+          <div className="absolute inset-y-8 left-4 bottom-8 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25" aria-hidden="true">
             <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
           </div>
-          <div className="absolute inset-y-8 right-4 bottom-8 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25">
+          <div className="absolute inset-y-8 right-4 bottom-8 pointer-events-none flex flex-col justify-between font-mono text-[9px] text-white/25" aria-hidden="true">
             <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
           </div>
           
