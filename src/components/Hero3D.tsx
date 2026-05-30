@@ -177,6 +177,20 @@ export function Hero3D() {
     const neonLight = new THREE.PointLight(0xc8ff2e, 30, 20)
     scene.add(neonLight)
 
+    // --- MOUSE TRACKING SETUP ---
+    let mouseX = 0
+    let mouseY = 0
+    let targetX = 0
+    let targetY = 0
+
+    const onMouseMove = (event: MouseEvent) => {
+      const windowHalfX = window.innerWidth / 2
+      const windowHalfY = window.innerHeight / 2
+      mouseX = (event.clientX - windowHalfX) / 100
+      mouseY = (event.clientY - windowHalfY) / 100
+    }
+    window.addEventListener('mousemove', onMouseMove)
+
     // --- ANIMATION LOOP ---
     let animationFrameId: number
     let time = 0
@@ -185,26 +199,30 @@ export function Hero3D() {
       animationFrameId = requestAnimationFrame(animate)
       time += 0.005
       
-      // Majestic slow rotation of the King
-      group.rotation.y = time * 0.5
-      group.rotation.x = Math.sin(time * 0.5) * 0.05
-      group.rotation.z = Math.cos(time * 0.3) * 0.03
+      // Interpolate mouse targets for fluid lagging inertia
+      targetX += (mouseX - targetX) * 0.05
+      targetY += (mouseY - targetY) * 0.05
+      
+      // Rotate the King piece dynamically with parallax
+      group.rotation.y = time * 0.3 + targetX * 0.5
+      group.rotation.x = Math.sin(time * 0.4) * 0.05 + targetY * 0.3
+      group.rotation.z = Math.cos(time * 0.2) * 0.03 + targetX * 0.1
       
       // Float up and down
-      group.position.y = 0.5 + Math.sin(time * 1.5) * 0.4
+      group.position.y = 0.5 + Math.sin(time * 1.2) * 0.3
 
       // Rotate particle aura
-      particlesMesh.rotation.y = -time * 0.2
-      particlesMesh.position.y = Math.sin(time * 0.8) * 0.5
+      particlesMesh.rotation.y = -time * 0.1
+      particlesMesh.position.y = Math.sin(time * 0.6) * 0.3
 
       // Orbiting lights for dynamic metallic reflections
-      goldLight.position.x = Math.sin(time * 2) * 8
-      goldLight.position.z = Math.cos(time * 2) * 8
-      goldLight.position.y = 2 + Math.sin(time * 1.5) * 4
+      goldLight.position.x = Math.sin(time * 1.5) * 8
+      goldLight.position.z = Math.cos(time * 1.5) * 8
+      goldLight.position.y = 2 + Math.sin(time * 1.2) * 3
 
-      neonLight.position.x = Math.cos(time * 1.8) * 7
-      neonLight.position.z = Math.sin(time * 1.8) * 7
-      neonLight.position.y = -2 + Math.cos(time * 1.2) * 5
+      neonLight.position.x = Math.cos(time * 1.2) * 7
+      neonLight.position.z = Math.sin(time * 1.2) * 7
+      neonLight.position.y = -2 + Math.cos(time * 0.8) * 4
 
       renderer.render(scene, camera)
     }
@@ -223,6 +241,7 @@ export function Hero3D() {
 
     // --- CLEANUP ---
     return () => {
+      window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('resize', handleResize)
       cancelAnimationFrame(animationFrameId)
       
