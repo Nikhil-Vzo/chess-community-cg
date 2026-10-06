@@ -31,45 +31,7 @@ The official digital platform and event management engine for the **Chhattisgarh
 
 ---
 
-## 🚀 Getting Started
 
-### Prerequisites
-- Node.js `>= 18.0.0`
-- npm or bun
-
-### Installation
-```bash
-# 1. Clone the repository
-git clone https://github.com/Nikhil-Vzo/chess-community-cg.git
-
-# 2. Navigate to project directory
-cd chess-community-cg
-
-# 3. Install dependencies
-npm install
-
-# 4. Start development server
-npm run dev
-```
-
-### Environment Configuration
-Create a `.env` file in the root directory:
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
----
-
-## 📦 Production Build
-
-```bash
-# Type check and build bundle
-npm run build
-
-# Preview production build locally
-npm run preview
-```
 
 ---
 
