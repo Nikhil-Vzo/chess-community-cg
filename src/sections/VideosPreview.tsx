@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { supabaseService } from '@/lib/supabaseService'
 import type { Video } from '@/types'
 import { Play, ArrowRight, Clock, Loader2 } from 'lucide-react'
@@ -76,7 +76,7 @@ export function VideosPreview() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Link href={`/videos/${featuredVideo.id}`} className="flex flex-col h-full justify-between">
+                <Link to={`/videos/${featuredVideo.id}`} className="flex flex-col h-full justify-between">
                   <div className="relative aspect-video w-full overflow-hidden border-b border-white/5 bg-black/40">
                     <img
                       src={featuredVideo.thumbnail_url}
@@ -121,7 +121,7 @@ export function VideosPreview() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link href={`/videos/${video.id}`} className="flex gap-4 items-center">
+                  <Link to={`/videos/${video.id}`} className="flex gap-4 items-center">
                     <div className="relative aspect-video w-32 shrink-0 rounded-xl overflow-hidden border border-white/5 bg-black/40">
                       <img
                         src={video.thumbnail_url}
@@ -157,7 +157,7 @@ export function VideosPreview() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
               >
-                <Link href="/videos" className="flex items-center justify-between w-full h-full">
+                <Link to="/videos" className="flex items-center justify-between w-full h-full">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-neon/10 flex items-center justify-center group-hover:bg-neon group-hover:text-dark transition-all duration-300">
                       <Play className="w-5 h-5 text-neon group-hover:text-dark ml-0.5" aria-hidden="true" />
@@ -188,7 +188,7 @@ export function VideosPreview() {
           viewport={{ once: true }}
         >
           <Link
-            href="/videos"
+            to="/videos"
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-neon text-dark font-body font-black text-xs uppercase tracking-[0.2em] rounded-full hover:shadow-neon-lg transition-all duration-300 active:scale-95"
           >
             Access Full Archive

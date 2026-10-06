@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
 const products = [
   {
@@ -47,7 +47,7 @@ export function StorePreview() {
             viewport={{ once: true }}
           >
             <Link 
-              href="/store" 
+              to="/store" 
               className="group flex items-center gap-3 text-white/60 hover:text-neon transition-colors"
             >
               <span className="font-body font-bold text-xs uppercase tracking-widest">View Full Store</span>

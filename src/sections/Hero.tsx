@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { ArrowRight, PlayCircle } from 'lucide-react'
 import { Hero3D } from '@/components/Hero3D'
 
@@ -54,7 +54,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
             <Link
-              href="/events?type=tournament"
+              to="/events?type=tournament"
               className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-xl bg-neon px-8 py-3.5 font-body text-xs font-black uppercase tracking-[0.2em] text-dark transition-all hover:shadow-[0_0_30px_rgba(200,255,46,0.4)] active:scale-95"
             >
               Explore Tournaments
@@ -62,7 +62,7 @@ export function Hero() {
             </Link>
 
             <Link
-              href="/videos"
+              to="/videos"
               className="group inline-flex items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-8 py-3.5 font-body text-xs font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/10"
             >
               <PlayCircle className="h-4 w-4 text-neon" aria-hidden="true" />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { supabaseService } from '@/lib/supabaseService'
 import type { ChessEvent } from '@/types'
 import { Calendar, MapPin, ArrowRight, Loader2, Star, Download } from 'lucide-react'
@@ -15,7 +15,7 @@ function EventCard({ event }: { event: ChessEvent }) {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link
-        href={`/events/${event.id}`}
+        to={`/events/${event.id}`}
         className="block glass rounded-3xl overflow-hidden border border-white/10 hover:border-neon/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1"
       >
         {/* Image - NO hover zoom animation */}
@@ -172,7 +172,7 @@ export function EventsPreview() {
           className="mb-12"
         >
           <Link 
-            href="/summer-fiesta"
+            to="/summer-fiesta"
             className="group relative block overflow-hidden rounded-[32px] glass border border-neon/30 bg-neon/5 hover:border-neon/60 hover:bg-neon/[0.08] transition-all duration-300 hover:-translate-y-1"
           >
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(200,255,46,0.06),transparent_70%)]" aria-hidden="true" />
@@ -240,7 +240,7 @@ export function EventsPreview() {
           viewport={{ once: true }}
         >
           <Link
-            href="/events"
+            to="/events"
             className="inline-flex items-center gap-2 px-8 py-3.5 border border-white/20 text-white/60 font-body font-bold text-xs uppercase tracking-[0.2em] rounded-full hover:bg-white hover:text-dark hover:border-white transition-all duration-300 active:scale-95"
           >
             View All Events & Camps
