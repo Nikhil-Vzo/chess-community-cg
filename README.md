@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# ♟️ Chhattisgarh Chess Community (CG Chess Platform)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 
-Currently, two official plugins are available:
+The official digital platform and event management engine for the **Chhattisgarh Chess Community (CG Chess Community)**. Built to centralize tournament registrations, Grandmaster/International Master coaching camps, player profiles, and state-wide chess archives.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ⚡ Key Capabilities
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🏆 Tournament Registration & Bracket Hub**: Dynamic enrollment workflows for state championships, rapid tournaments, and blitz open events.
+- **🎓 Masterclass & Coaching Camps Directory**: Official portal for masterclasses and training camps led by International Masters (e.g., IM Sri Ram Jha) and Grandmasters.
+- **🎖️ Player & Hall of Fame Showcase**: Verified player records, state ranking leaderboards, and trophy archives.
+- **📸 Media & Event Gallery**: High-resolution photo archives, event highlights, and press coverage of regional tournaments.
+- **📱 Responsive & Fluid Motion**: Crafted using Radix UI primitives and GSAP animations for smooth, accessible user interactions.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Architecture & Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend Framework**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+- **Styling & Design System**: [Tailwind CSS](https://tailwindcss.com/) with custom dark/light theme tokens
+- **UI Primitives**: [Radix UI](https://www.radix-ui.com/) (Dialog, Accordion, Avatar, Dropdown, Collapsible)
+- **Animation Engine**: [GSAP](https://greensock.com/gsap/) + [@gsap/react](https://www.npmjs.com/package/@gsap/react)
+- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL & Realtime subscriptions)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js `>= 18.0.0`
+- npm or bun
+
+### Installation
+```bash
+# 1. Clone the repository
+git clone https://github.com/Nikhil-Vzo/chess-community-cg.git
+
+# 2. Navigate to project directory
+cd chess-community-cg
+
+# 3. Install dependencies
+npm install
+
+# 4. Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Environment Configuration
+Create a `.env` file in the root directory:
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+---
+
+## 📦 Production Build
+
+```bash
+# Type check and build bundle
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+## 👨‍💻 Developed For
+Built as the official digital infrastructure for the **Chhattisgarh Chess Community** by [Nikhil Yadav](https://github.com/Nikhil-Vzo).
